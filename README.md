@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # VHDL SoC Workspace
 
 Bu repo, `CV32E40P` tabanli mikrodenetleyici SoC gelistirmesi icin kullanilan calisma alanidir. Su anki odak, `AI` harici mimariyi temiz, test edilebilir ve Vivado'da sentezlenebilir halde tutmaktir.
@@ -284,3 +285,7 @@ Bu repo su anda AI harici mikrodenetleyici SoC iskeletini anlamak, simule etmek 
 3. [soc/cv32e40p_axi_soc.sv](/home/emirhan/Desktop/VHDL/soc/cv32e40p_axi_soc.sv:1)
 4. `make -C soc full`
 5. sonra ilgili periferalin `tb_*` dosyasina bakmak
+=======
+# 2026_chip_design
+2026 Mikrodenetleyici Çip Tasarım Projesi
+>>>>>>> origin/main
