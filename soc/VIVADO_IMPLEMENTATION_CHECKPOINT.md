@@ -17,7 +17,7 @@ Bu checkpoint, non-AI mimarinin yalnizca simülasyonda degil, Vivado implementat
 
 ## Kullanilan Top
 
-- [soc/fpga_top.sv](/home/emirhan/Desktop/VHDL/soc/fpga_top.sv:1)
+- [soc/fpga_top.sv](./fpga_top.sv#L1)
 
 Bu wrapper:
 

@@ -14,7 +14,7 @@ Hakem notu:
 - mimari şemada `OBI2AXI` dönüşümü görünmüyor
 
 Bizim mevcut RTL karşılığı:
-- [cv32e40p_obi_to_axi_lite.sv](/home/emirhan/Desktop/VHDL/soc/cv32e40p_obi_to_axi_lite.sv:1)
+- [cv32e40p_obi_to_axi_lite.sv](./cv32e40p_obi_to_axi_lite.sv#L1)
 
 Rapor/şema kuralı:
 - `CV32E40P` bloğunun data tarafında doğrudan `AXI` çizilmemeli
@@ -30,8 +30,8 @@ Hakem notu:
 - Boot ROM mimari şemada görünmüyor
 
 Bizim mevcut RTL karşılığı:
-- [soc_rom.sv](/home/emirhan/Desktop/VHDL/soc/soc_rom.sv:1)
-- [soc_boot_copy_xip.sv](/home/emirhan/Desktop/VHDL/soc/soc_boot_copy_xip.sv:1)
+- [soc_rom.sv](./soc_rom.sv#L1)
+- [soc_boot_copy_xip.sv](./soc_boot_copy_xip.sv#L1)
 
 Rapor/şema kuralı:
 - `Boot ROM` ayrı blok olarak çizilmeli

@@ -21,8 +21,8 @@ Seçim gerekçesi:
 ## Mevcut Yerel Bağlam
 
 Bugün elimizde şu iki yerel blok zaten var:
-- [soc_apb_qspi_cfg.sv](/home/emirhan/Desktop/VHDL/soc/soc_apb_qspi_cfg.sv:1)
-- [soc_boot_copy_xip.sv](/home/emirhan/Desktop/VHDL/soc/soc_boot_copy_xip.sv:1)
+- [soc_apb_qspi_cfg.sv](./soc_apb_qspi_cfg.sv#L1)
+- [soc_boot_copy_xip.sv](./soc_boot_copy_xip.sv#L1)
 
 Ve top-level SoC içinde:
 - `SOC_QSPI_CFG_BASE_ADDR` bir APB/MMIO register alanı
@@ -73,7 +73,7 @@ Sorumlulukları:
 - `Wishbone` benzeri `cyc/stb/ack/stall/data` akışına dönüştürmek
 - write isteklerinde `SLVERR` dönmek
 
-Bu katman gerekli çünkü [soc_boot_copy_xip.sv](/home/emirhan/Desktop/VHDL/soc/soc_boot_copy_xip.sv:1) bugün XIP kaynağını `AXI-Lite` okunabilir alan gibi görüyor.
+Bu katman gerekli çünkü [soc_boot_copy_xip.sv](./soc_boot_copy_xip.sv#L1) bugün XIP kaynağını `AXI-Lite` okunabilir alan gibi görüyor.
 
 ### 3. İleri Faz İçin `qspi_cfg` Köprüsü
 
@@ -87,7 +87,7 @@ Ama bu kapıyı ilk günden açmak istemiyoruz. İlk hedef `boot-copy` ve `XIP r
 
 ## `qspi_cfg` Nasıl Bağlanacak
 
-[soc_apb_qspi_cfg.sv](/home/emirhan/Desktop/VHDL/soc/soc_apb_qspi_cfg.sv:1) yerinde kalacak. Bu blok şu an için yanlış değil; sadece görev alanı farklı.
+[soc_apb_qspi_cfg.sv](./soc_apb_qspi_cfg.sv#L1) yerinde kalacak. Bu blok şu an için yanlış değil; sadece görev alanı farklı.
 
 Bu blok:
 - SoC-visible metadata/status bloğu olacak
@@ -114,12 +114,12 @@ Kısacası:
 ## `boot-copy` Yoluna Nasıl Oturacak
 
 Bugünkü akış:
-- [soc_boot_copy_xip.sv](/home/emirhan/Desktop/VHDL/soc/soc_boot_copy_xip.sv:1), `SOC_QSPI_XIP_BASE_ADDR` alanından kelime kelime okuma yapıyor
+- [soc_boot_copy_xip.sv](./soc_boot_copy_xip.sv#L1), `SOC_QSPI_XIP_BASE_ADDR` alanından kelime kelime okuma yapıyor
 - dönen veriyi `IMEM` içine yazıyor
 
 Hedef akış:
 1. `soc_boot_copy_xip` yine `SOC_QSPI_XIP_BASE_ADDR + offset` adreslerine `AXI-Lite` read başlatacak
-2. [cv32e40p_axi_soc.sv](/home/emirhan/Desktop/VHDL/soc/cv32e40p_axi_soc.sv:1) içinde bu adres aralığı artık dış AXI yerine yerel `qspi_xip` bloğuna decode edilecek
+2. [cv32e40p_axi_soc.sv](./cv32e40p_axi_soc.sv#L1) içinde bu adres aralığı artık dış AXI yerine yerel `qspi_xip` bloğuna decode edilecek
 3. `soc_axi_lite_qspi_xip` bu read'i alip `qflexpress` istegine cevirecek
 4. `qflexpress` gerçek QSPI flash’tan kelimeyi okuyacak
 5. veri tekrar `AXI-Lite R` cevabı olarak `boot-copy` FSM’ine dönecek

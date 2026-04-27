@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # VHDL SoC Workspace
 
 Bu repo, `CV32E40P` tabanli mikrodenetleyici SoC gelistirmesi icin kullanilan calisma alanidir. Su anki odak, `AI` harici mimariyi temiz, test edilebilir ve Vivado'da sentezlenebilir halde tutmaktir.
@@ -55,8 +54,8 @@ Bu repo su an kart ustunde final demo bitstream'i degil. `fpga_top` implementati
 - `QSPI_XIP`: `0x3000_0000`, `16 MB`
 
 Detaylar:
-- [soc/MEMORY_MAP_V0.md](/home/emirhan/Desktop/VHDL/soc/MEMORY_MAP_V0.md:1)
-- [soc/soc_map_pkg.sv](/home/emirhan/Desktop/VHDL/soc/soc_map_pkg.sv:1)
+- [soc/MEMORY_MAP_V0.md](./soc/MEMORY_MAP_V0.md#L1)
+- [soc/soc_map_pkg.sv](./soc/soc_map_pkg.sv#L1)
 
 ### Cevre Birimleri
 
@@ -80,15 +79,15 @@ Mevcut boot akisi su mantikta calisir:
 4. Boot handoff ile `IMEM` uygulamasina dallanilir
 
 Bu akisin testli hali:
-- [soc/tb_cv32e40p_axi_soc_rom_boot.sv](/home/emirhan/Desktop/VHDL/soc/tb_cv32e40p_axi_soc_rom_boot.sv:1)
-- [soc/tb_cv32e40p_axi_soc_rom_handoff.sv](/home/emirhan/Desktop/VHDL/soc/tb_cv32e40p_axi_soc_rom_handoff.sv:1)
-- [soc/tb_cv32e40p_axi_soc_rom_image.sv](/home/emirhan/Desktop/VHDL/soc/tb_cv32e40p_axi_soc_rom_image.sv:1)
+- [soc/tb_cv32e40p_axi_soc_rom_boot.sv](./soc/tb_cv32e40p_axi_soc_rom_boot.sv#L1)
+- [soc/tb_cv32e40p_axi_soc_rom_handoff.sv](./soc/tb_cv32e40p_axi_soc_rom_handoff.sv#L1)
+- [soc/tb_cv32e40p_axi_soc_rom_image.sv](./soc/tb_cv32e40p_axi_soc_rom_image.sv#L1)
 
 ## En Onemli Dosyalar
 
 ### Ana SoC Top
 
-- [soc/cv32e40p_axi_soc.sv](/home/emirhan/Desktop/VHDL/soc/cv32e40p_axi_soc.sv:1)
+- [soc/cv32e40p_axi_soc.sv](./soc/cv32e40p_axi_soc.sv#L1)
 
 Buradan bakarak su ana mimariyi gorebilirsin:
 - local memory decode
@@ -99,39 +98,39 @@ Buradan bakarak su ana mimariyi gorebilirsin:
 
 ### Bellek Katmani
 
-- [soc/soc_mem_sp.sv](/home/emirhan/Desktop/VHDL/soc/soc_mem_sp.sv:1)
-- [soc/soc_rom.sv](/home/emirhan/Desktop/VHDL/soc/soc_rom.sv:1)
-- [soc/soc_imem.sv](/home/emirhan/Desktop/VHDL/soc/soc_imem.sv:1)
-- [soc/soc_axi_lite_imem.sv](/home/emirhan/Desktop/VHDL/soc/soc_axi_lite_imem.sv:1)
-- [soc/soc_dmem.sv](/home/emirhan/Desktop/VHDL/soc/soc_dmem.sv:1)
+- [soc/soc_mem_sp.sv](./soc/soc_mem_sp.sv#L1)
+- [soc/soc_rom.sv](./soc/soc_rom.sv#L1)
+- [soc/soc_imem.sv](./soc/soc_imem.sv#L1)
+- [soc/soc_axi_lite_imem.sv](./soc/soc_axi_lite_imem.sv#L1)
+- [soc/soc_dmem.sv](./soc/soc_dmem.sv#L1)
 
 ### Boot ve Flash
 
-- [soc/soc_boot_copy_xip.sv](/home/emirhan/Desktop/VHDL/soc/soc_boot_copy_xip.sv:1)
-- [soc/soc_qspi_xip.sv](/home/emirhan/Desktop/VHDL/soc/soc_qspi_xip.sv:1)
-- [soc/soc_axi_lite_qspi_xip.sv](/home/emirhan/Desktop/VHDL/soc/soc_axi_lite_qspi_xip.sv:1)
-- [soc/soc_qspi_init_seq.sv](/home/emirhan/Desktop/VHDL/soc/soc_qspi_init_seq.sv:1)
-- [soc/soc_qspi_cfg_mux.sv](/home/emirhan/Desktop/VHDL/soc/soc_qspi_cfg_mux.sv:1)
-- [soc/soc_apb_qspi_cfg.sv](/home/emirhan/Desktop/VHDL/soc/soc_apb_qspi_cfg.sv:1)
+- [soc/soc_boot_copy_xip.sv](./soc/soc_boot_copy_xip.sv#L1)
+- [soc/soc_qspi_xip.sv](./soc/soc_qspi_xip.sv#L1)
+- [soc/soc_axi_lite_qspi_xip.sv](./soc/soc_axi_lite_qspi_xip.sv#L1)
+- [soc/soc_qspi_init_seq.sv](./soc/soc_qspi_init_seq.sv#L1)
+- [soc/soc_qspi_cfg_mux.sv](./soc/soc_qspi_cfg_mux.sv#L1)
+- [soc/soc_apb_qspi_cfg.sv](./soc/soc_apb_qspi_cfg.sv#L1)
 
 ### Peripheral Katmani
 
-- [soc/soc_axi_lite_uart.sv](/home/emirhan/Desktop/VHDL/soc/soc_axi_lite_uart.sv:1)
-- [soc/soc_axi_lite_apb_island.sv](/home/emirhan/Desktop/VHDL/soc/soc_axi_lite_apb_island.sv:1)
-- [soc/soc_apb_gpio.sv](/home/emirhan/Desktop/VHDL/soc/soc_apb_gpio.sv:1)
-- [soc/soc_apb_timer.sv](/home/emirhan/Desktop/VHDL/soc/soc_apb_timer.sv:1)
-- [soc/soc_apb_i2c_master.sv](/home/emirhan/Desktop/VHDL/soc/soc_apb_i2c_master.sv:1)
-- [soc/soc_irq_router.sv](/home/emirhan/Desktop/VHDL/soc/soc_irq_router.sv:1)
+- [soc/soc_axi_lite_uart.sv](./soc/soc_axi_lite_uart.sv#L1)
+- [soc/soc_axi_lite_apb_island.sv](./soc/soc_axi_lite_apb_island.sv#L1)
+- [soc/soc_apb_gpio.sv](./soc/soc_apb_gpio.sv#L1)
+- [soc/soc_apb_timer.sv](./soc/soc_apb_timer.sv#L1)
+- [soc/soc_apb_i2c_master.sv](./soc/soc_apb_i2c_master.sv#L1)
+- [soc/soc_irq_router.sv](./soc/soc_irq_router.sv#L1)
 
 ### Ana Dokumanlar
 
-- [TEAM_GUIDE.md](/home/emirhan/Desktop/VHDL/TEAM_GUIDE.md:1)
-- [soc/ARCHITECTURE_DECISIONS_V0.md](/home/emirhan/Desktop/VHDL/soc/ARCHITECTURE_DECISIONS_V0.md:1)
-- [soc/MEMORY_MAP_V0.md](/home/emirhan/Desktop/VHDL/soc/MEMORY_MAP_V0.md:1)
-- [soc/QSPI_CFG_REGMAP.md](/home/emirhan/Desktop/VHDL/soc/QSPI_CFG_REGMAP.md:1)
-- [soc/VIVADO_TEST_GUIDE.md](/home/emirhan/Desktop/VHDL/soc/VIVADO_TEST_GUIDE.md:1)
-- [soc/VIVADO_IMPLEMENTATION_CHECKPOINT.md](/home/emirhan/Desktop/VHDL/soc/VIVADO_IMPLEMENTATION_CHECKPOINT.md:1)
-- [soc/TEKNOFEST_REVIEW_CHECKLIST.md](/home/emirhan/Desktop/VHDL/soc/TEKNOFEST_REVIEW_CHECKLIST.md:1)
+- [TEAM_GUIDE.md](./TEAM_GUIDE.md#L1)
+- [soc/ARCHITECTURE_DECISIONS_V0.md](./soc/ARCHITECTURE_DECISIONS_V0.md#L1)
+- [soc/MEMORY_MAP_V0.md](./soc/MEMORY_MAP_V0.md#L1)
+- [soc/QSPI_CFG_REGMAP.md](./soc/QSPI_CFG_REGMAP.md#L1)
+- [soc/VIVADO_TEST_GUIDE.md](./soc/VIVADO_TEST_GUIDE.md#L1)
+- [soc/VIVADO_IMPLEMENTATION_CHECKPOINT.md](./soc/VIVADO_IMPLEMENTATION_CHECKPOINT.md#L1)
+- [soc/TEKNOFEST_REVIEW_CHECKLIST.md](./soc/TEKNOFEST_REVIEW_CHECKLIST.md#L1)
 
 ## Hangi Vendor IP'ler Kullaniyor
 
@@ -143,7 +142,7 @@ Aktif ucuncu taraf kaynaklari:
 - QSPI XIP alt bloklari
 
 Atif ve kaynak bilgileri:
-- [soc/third_party/ATTRIBUTION.md](/home/emirhan/Desktop/VHDL/soc/third_party/ATTRIBUTION.md:1)
+- [soc/third_party/ATTRIBUTION.md](./soc/third_party/ATTRIBUTION.md#L1)
 
 ## Hemen Baslamak Icin
 
@@ -156,8 +155,8 @@ xdg-open demo/index.html
 ```
 
 Panel dosyalari:
-- [demo/index.html](/home/emirhan/Desktop/VHDL/demo/index.html:1)
-- [demo/README.md](/home/emirhan/Desktop/VHDL/demo/README.md:1)
+- [demo/index.html](./demo/index.html#L1)
+- [demo/README.md](./demo/README.md#L1)
 
 ### Gereken Araclar
 
@@ -268,8 +267,8 @@ AI tarafinda ise ayri olarak kalanlar:
 
 ## Repo Icinde Calisirken Pratik Kurallar
 
-- Ana referans top dosya: [soc/cv32e40p_axi_soc.sv](/home/emirhan/Desktop/VHDL/soc/cv32e40p_axi_soc.sv:1)
-- Adres/slot degisikligi gerekiyorsa once [soc/soc_map_pkg.sv](/home/emirhan/Desktop/VHDL/soc/soc_map_pkg.sv:1) degistir
+- Ana referans top dosya: [soc/cv32e40p_axi_soc.sv](./soc/cv32e40p_axi_soc.sv#L1)
+- Adres/slot degisikligi gerekiyorsa once [soc/soc_map_pkg.sv](./soc/soc_map_pkg.sv#L1) degistir
 - Yeni peripheral eklerken:
   - once local testbench
   - sonra top-level smoke test
@@ -280,12 +279,8 @@ AI tarafinda ise ayri olarak kalanlar:
 
 Bu repo su anda AI harici mikrodenetleyici SoC iskeletini anlamak, simule etmek ve Vivado'da smoke seviyesinde sentezlemek icin yeterince duzenli durumdadir. Yeni gelen bir ekip arkadasi icin en iyi baslangic sirasi:
 
-1. [soc/ARCHITECTURE_DECISIONS_V0.md](/home/emirhan/Desktop/VHDL/soc/ARCHITECTURE_DECISIONS_V0.md:1)
-2. [soc/MEMORY_MAP_V0.md](/home/emirhan/Desktop/VHDL/soc/MEMORY_MAP_V0.md:1)
-3. [soc/cv32e40p_axi_soc.sv](/home/emirhan/Desktop/VHDL/soc/cv32e40p_axi_soc.sv:1)
+1. [soc/ARCHITECTURE_DECISIONS_V0.md](./soc/ARCHITECTURE_DECISIONS_V0.md#L1)
+2. [soc/MEMORY_MAP_V0.md](./soc/MEMORY_MAP_V0.md#L1)
+3. [soc/cv32e40p_axi_soc.sv](./soc/cv32e40p_axi_soc.sv#L1)
 4. `make -C soc full`
 5. sonra ilgili periferalin `tb_*` dosyasina bakmak
-=======
-# 2026_chip_design
-2026 Mikrodenetleyici Çip Tasarım Projesi
->>>>>>> origin/main

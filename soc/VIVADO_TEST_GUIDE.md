@@ -35,7 +35,7 @@ which verilator
 Repo köküne geç:
 
 ```bash
-cd /home/emirhan/Desktop/VHDL
+cd <repo-kok-dizini>
 ```
 
 ## 3. Önce RTL Regresyonu Çalıştır
@@ -165,7 +165,7 @@ Eğer terminalde `ERROR:` varsa önce onu çöz.
 
 Dosya:
 
-[utilization_ooc.rpt](/home/emirhan/Desktop/VHDL/soc/build/vivado_smoke/ooc_xc7a35tcpg236-1/reports/utilization_ooc.rpt:1)
+[utilization_ooc.rpt](./build/vivado_smoke/ooc_xc7a35tcpg236-1/reports/utilization_ooc.rpt#L1)
 
 Burada şunlara bak:
 - LUT sayısı
@@ -180,7 +180,7 @@ Bu tasarım için özellikle:
 
 Dosya:
 
-[timing_ooc.rpt](/home/emirhan/Desktop/VHDL/soc/build/vivado_smoke/ooc_xc7a35tcpg236-1/reports/timing_ooc.rpt:1)
+[timing_ooc.rpt](./build/vivado_smoke/ooc_xc7a35tcpg236-1/reports/timing_ooc.rpt#L1)
 
 Bu aşamada yorum:
 - tamamen board-level kesin sonuç değildir
@@ -213,7 +213,7 @@ Sebep basit: `CV32E40P` manifest'i, include dizinleri ve hariç tutulması gerek
 
 Bu iş için hazır script:
 
-- [soc/vivado_gui_add_sources.tcl](/home/emirhan/Desktop/VHDL/soc/vivado_gui_add_sources.tcl:1)
+- [soc/vivado_gui_add_sources.tcl](./vivado_gui_add_sources.tcl#L1)
 
 ### Yöntem A: GUI'de boş proje aç, sonra kaynakları script ile ekle
 
@@ -225,12 +225,12 @@ Bu iş için hazır script:
 5. FPGA part seçim ekranında cihazını seç.
 6. Proje açıldıktan sonra:
    - `Tools -> Run Tcl Script...` de
-   - [soc/vivado_gui_add_sources.tcl](/home/emirhan/Desktop/VHDL/soc/vivado_gui_add_sources.tcl:1) dosyasını seç
+   - [soc/vivado_gui_add_sources.tcl](./vivado_gui_add_sources.tcl#L1) dosyasını seç
 
 Alternatif olarak Tcl Console'da:
 
 ```tcl
-source /home/emirhan/Desktop/VHDL/soc/vivado_gui_add_sources.tcl
+source <repo-kok-dizini>/soc/vivado_gui_add_sources.tcl
 ```
 
 Script şunları otomatik yapar:
@@ -300,7 +300,7 @@ Bir hata gördüğünde şu sırayla git:
 En kısa doğru akış:
 
 ```bash
-cd /home/emirhan/Desktop/VHDL
+cd <repo-kok-dizini>
 make -C soc full
 vivado -mode batch -source soc/vivado_smoke.tcl -tclargs xc7a35tcpg236-1 rtl
 vivado -mode batch -source soc/vivado_smoke.tcl -tclargs xc7a35tcpg236-1 ooc

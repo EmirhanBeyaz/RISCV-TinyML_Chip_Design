@@ -6,14 +6,14 @@ Buradaki kodlar proje agacina uyarlanmis ve yerel wrapper'larla entegre edilmist
 ## Bilesenler
 
 - UART alt bloklari
-  - Konum: [uart](/home/emirhan/Desktop/VHDL/soc/third_party/uart:1)
-  - Kaynak ve lisans: [uart/SOURCE.md](/home/emirhan/Desktop/VHDL/soc/third_party/uart/SOURCE.md:1)
+  - Konum: [uart](./uart#L1)
+  - Kaynak ve lisans: [uart/SOURCE.md](./uart/SOURCE.md#L1)
 
 - Peripheral temel bloklari
-  - Konum: [peripherals](/home/emirhan/Desktop/VHDL/soc/third_party/peripherals:1)
-  - Kaynak ve lisans: [peripherals/SOURCE.md](/home/emirhan/Desktop/VHDL/soc/third_party/peripherals/SOURCE.md:1)
+  - Konum: [peripherals](./peripherals#L1)
+  - Kaynak ve lisans: [peripherals/SOURCE.md](./peripherals/SOURCE.md#L1)
 
 - QSPI XIP alt bloklari
-  - Konum: [qspi_xip](/home/emirhan/Desktop/VHDL/soc/third_party/qspi_xip:1)
-  - Kaynak ve lisans: [qspi_xip/SOURCE.md](/home/emirhan/Desktop/VHDL/soc/third_party/qspi_xip/SOURCE.md:1)
-  - Entegrasyon notlari: [qspi_xip/NOTES.md](/home/emirhan/Desktop/VHDL/soc/third_party/qspi_xip/NOTES.md:1)
+  - Konum: [qspi_xip](./qspi_xip#L1)
+  - Kaynak ve lisans: [qspi_xip/SOURCE.md](./qspi_xip/SOURCE.md#L1)
+  - Entegrasyon notlari: [qspi_xip/NOTES.md](./qspi_xip/NOTES.md#L1)
