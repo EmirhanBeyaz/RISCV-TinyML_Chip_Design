@@ -1,0 +1,24 @@
+.Xil/
+.NLOPTFAILED
+.codex
+
+soc/build/
+
+vivado.jou
+vivado.log
+vivado_*.backup.jou
+vivado_*.backup.log
+
+soc/vivado.jou
+soc/vivado.log
+soc/vivado_*.backup.jou
+soc/vivado_*.backup.log
+
+# Vivado project/build artefacts that may be created outside soc/build.
+*.xpr
+*.runs/
+*.cache/
+*.hw/
+*.ip_user_files/
+*.sim/
+*.srcs/
