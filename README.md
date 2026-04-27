@@ -1,2 +1,2 @@
-# teknofest2026_chip_design
-Teknofest 2026 Mikrodenetleyici Çip Tasarım Projesi
+# 2026_chip_design
+2026 Mikrodenetleyici Çip Tasarım Projesi
