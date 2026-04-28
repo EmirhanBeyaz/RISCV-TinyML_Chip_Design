@@ -39,4 +39,6 @@ Kurallar:
 
 Not:
 - `AI_MEM` için `32 KB` decode penceresi kullanılıyor; gerçek ihtiyaç `30 KB`.
+- `AI_CSR` native AXI-Lite slave olarak bağlıdır; APB adasının içinde değildir.
+- `AI_MEM`, CPU AXI-Lite erişimi ile AI UART loader / accelerator internal portunu paylaşır.
 - İleride değişiklik gerektiğinde önce `soc_map_pkg.sv`, sonra decoder ve linker script güncellenmeli.

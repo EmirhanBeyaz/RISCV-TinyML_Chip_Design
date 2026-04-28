@@ -4,7 +4,7 @@ Bu doküman, repoyu GitHub'a yükledikten sonra takım arkadaşlarının aynı n
 
 ## 1. Projenin Şu Anki Durumu
 
-Bu repo şu anda `AI` hariç mikrodenetleyici SoC baseline'ını içerir.
+Bu repo şu anda mikrodenetleyici SoC baseline'ını ve AI adasi icin testli CSR/MEM/UART/IRQ altyapisini icerir.
 
 Tamamlanmış ana parçalar:
 
@@ -21,7 +21,7 @@ Tamamlanmış ana parçalar:
 
 Henüz tamamlanmamış ana parçalar:
 
-- `AI_CSR`, `AI_MEM`, `AI_IRQ` ve hızlandırıcı entegrasyonu
+- gerçek TFLite Micro Speech ağırlıkları, golden vektörleri ve accuracy/performance sign-off
 - karta özel `.xdc`
 - gerçek QSPI flash pin bring-up
 - kart üstünde UART/GPIO/flash fiziksel demo
@@ -198,7 +198,7 @@ Panelin anlattığı şeyler:
 - boot akışı
 - Vivado başarı kanıtları
 - bellek/MMIO haritası
-- AI'nin sonraki faz olduğu
+- AI altyapısının entegre edildiği, gerçek model sign-off'unun kaldığı
 
 Bu panel teknik doğrulamanın yerine geçmez. Teknik kanıtlar testbenchler, Vivado raporları ve checkpoint dokümanlarıdır.
 
@@ -238,20 +238,26 @@ Sonra:
 - ilgili testbench
 - gerekirse firmware/linker beklentileri
 
-### AI tarafına geçilirse
+### AI tarafında çalışılırsa
 
-AI işi mevcut non-AI baseline'ı kırmadan yapılmalı.
+AI işi mevcut baseline'ı kırmadan yapılmalı.
 
-Önerilen sıra:
+Mevcut entegre altyapı:
 
-1. `AI_CSR` register bloğu
-2. `AI_MEM` local memory wrapper
-3. `AI_IRQ` bağlantısı
-4. basit dummy accelerator
-5. CPU'dan register write/read smoke testi
-6. AI memory write/read smoke testi
-7. interrupt smoke testi
-8. demo panelindeki AI bölümünü gerçek duruma göre güncelle
+- `AI_CSR`: `0x1000_6000`
+- `AI_MEM`: `0x2000_0000`, 32 KB window / 30 KB implemented
+- `AI_UART loader`: UART1 RX hattindan AI_MEM'e byte stream
+- `AI_IRQ`: fast IRQ bit 19
+- `soc_ai_tinyconv_accel`: sentetik agirlikli TinyConv-sekilli RTL iskeleti
+- `tools/ai/export_tinyconv_assets.py`: model asset/golden uretim araci
+
+Sonraki önerilen sıra:
+
+1. Resmi TFLite Micro Speech quantized `.tflite` modelini `tools/ai/export_tinyconv_assets.py` ile asset/golden dosyalarina cevir
+2. `soc_ai_tinyconv_accel` içindeki sentetik ağırlık fonksiyonlarını gerçek ağırlık/bias/scale ROM'larıyla değiştir
+3. CPU firmware akışını ekle: UART1 input, AI start, IRQ ISR, UART0 result
+4. Yazılım referansı ile cycle/accuracy karşılaştırması üret
+5. AXI/AXI-Lite protocol check ve Vivado/OpenLane sign-off tarafını genişlet
 
 AI entegrasyonu sırasında özellikle korunacak şeyler:
 
@@ -360,7 +366,7 @@ Eksik test varsa saklanmamalı; açıkça yazılmalı.
 - `soc/build/` klasörünü commit'e eklemek
 - bellek haritasını kodda değiştirip `MEMORY_MAP_V0.md` dokümanını güncellememek
 - peripheral ekleyip testbench eklememek
-- AI entegrasyonunda mevcut boot/QSPI/UART testlerini kırmak
+- AI değişikliklerinde mevcut boot/QSPI/UART testlerini kırmak
 
 ## 13. Kısa Devralma Özeti
 
@@ -369,5 +375,6 @@ Bu repo takım için şu an iyi bir başlangıç baseline'ıdır:
 - non-AI SoC mimarisi çalışır ve testlidir
 - Vivado implementation seviyesine taşınmıştır
 - kart olmadığı için fiziksel demo yoktur
-- AI entegrasyonu için adres pencereleri ve mimari zemin hazırdır
+- AI CSR/MEM/UART/IRQ altyapısı entegre edilmiştir
+- gerçek model ağırlıkları ve accuracy sign-off hâlâ ayrı iştir
 - ekip çalışması için önce küçük branchler, sonra testli PR akışı izlenmelidir

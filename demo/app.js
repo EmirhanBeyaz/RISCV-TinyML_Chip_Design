@@ -7,7 +7,7 @@ const nodeDetails = {
     items: [
       "Instruction fetch yolu IMEM/ROM/QSPI akışına bağlandı.",
       "Data yolu OBI → AXI-Lite köprüsüyle çevre birimlerine erişiyor.",
-      "AI entegrasyonu için adres pencereleri hazır bırakıldı."
+      "AI_CSR, AI_MEM, AI_UART loader ve AI_IRQ artık SoC omurgasına bağlı."
     ]
   },
   bridge: {
@@ -88,14 +88,14 @@ const nodeDetails = {
     ]
   },
   ai: {
-    status: "Sonraki faz",
+    status: "Altyapı entegre",
     title: "AI Unit",
     body:
-      "AI kısmı bilinçli olarak bu baseline’dan sonra eklenecek. Bunun avantajı, hızlandırıcıyı çalışan bir SoC omurgasına takmak ve hataları ayırabilmek.",
+      "AI adası memory-mapped CSR, 30 KB local bellek, UART1 RX veri yükleyici, done interrupt ve TinyConv-sekilli RTL hızlandırıcı iskeletiyle SoC’ye bağlandı.",
     items: [
-      "AI_CSR: kontrol/status register alanı.",
-      "AI_MEM: 30 KB hedef veri belleği, 32 KB decode penceresi.",
-      "AI_IRQ: hızlandırıcı tamamlandı/hata sinyali için interrupt hattı."
+      "AI_CSR: start, status, result, cycle count ve IRQ control.",
+      "AI_MEM: CPU AXI-Lite + accelerator internal port.",
+      "Kalan iş: resmi Micro Speech ağırlıkları, golden vektörler ve accuracy sign-off."
     ]
   }
 };

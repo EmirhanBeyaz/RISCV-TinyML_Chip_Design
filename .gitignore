@@ -1,6 +1,7 @@
 .Xil/
 .NLOPTFAILED
 .codex
+.venv-ai/
 
 soc/build/
 

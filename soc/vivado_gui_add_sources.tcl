@@ -72,6 +72,10 @@ set soc_files [list \
   [file join $soc_dir soc_axi_lite_qspi_xip.sv] \
   [file join $soc_dir soc_qspi_init_seq.sv] \
   [file join $soc_dir soc_qspi_cfg_mux.sv] \
+  [file join $soc_dir soc_ai_mem.sv] \
+  [file join $soc_dir soc_ai_uart_loader.sv] \
+  [file join $soc_dir soc_ai_csr.sv] \
+  [file join $soc_dir soc_ai_tinyconv_accel.sv] \
   [file join $soc_dir soc_axi_lite_1x2.sv] \
   [file join $soc_dir soc_axi_lite_uart.sv] \
   [file join $soc_dir soc_axi_lite_apb_island.sv] \

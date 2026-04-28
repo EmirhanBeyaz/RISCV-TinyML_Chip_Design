@@ -28,7 +28,7 @@
         <section class="hero">
           <div class="hero-copy">
             <p class="eyebrow">FPGA kartı olmadan gösterilebilir doğrulama</p>
-            <h1>AI hariç SoC mimarisi Vivado implementation seviyesine taşındı.</h1>
+            <h1>CV32E40P SoC omurgasına AI hızlandırıcı adası eklendi.</h1>
             <p class="hero-text">
               Bu panel, teknik detay bilmeyen bir izleyiciye bile tasarımın hangi bloklardan oluştuğunu,
               nasıl boot ettiğini ve Vivado tarafında hangi kanıtların üretildiğini tek ekranda anlatmak için hazırlandı.
@@ -37,7 +37,7 @@
               <span class="status-pill success">RTL elaboration geçti</span>
               <span class="status-pill success">Synthesis geçti</span>
               <span class="status-pill success">Implementation geçti</span>
-              <span class="status-pill muted">AI bloğu sonraki faz</span>
+              <span class="status-pill muted">AI altyapısı entegre</span>
             </div>
           </div>
 
@@ -150,7 +150,7 @@
                 <g class="arch-node future" data-node="ai" tabindex="0">
                   <rect x="782" y="462" width="284" height="70" rx="22" class="node-fill future-fill" />
                   <text x="924" y="493" text-anchor="middle" class="node-title">AI Unit</text>
-                  <text x="924" y="517" text-anchor="middle" class="node-sub">AI_CSR + AI_MEM + IRQ sonraki faz</text>
+                  <text x="924" y="517" text-anchor="middle" class="node-sub">AI_CSR + AI_MEM + AI_UART + IRQ</text>
                 </g>
               </svg>
             </div>
@@ -166,7 +166,7 @@
             <ul id="node-list" class="check-list">
               <li>Instruction fetch yolu IMEM/ROM/QSPI akışına bağlandı.</li>
               <li>Data yolu OBI → AXI-Lite köprüsüyle çevre birimlerine erişiyor.</li>
-              <li>AI entegrasyonu için adres pencereleri hazır bırakıldı.</li>
+              <li>AI_CSR, AI_MEM, AI_UART loader ve AI_IRQ SoC’ye bağlandı.</li>
             </ul>
           </aside>
         </section>
@@ -310,17 +310,17 @@
         <section id="sonraki" class="next-section">
           <div class="panel next-panel">
             <div>
-              <span class="panel-label">Sonraki somut faz</span>
-              <h2>AI entegrasyonuna geçmeden önce zemin hazır</h2>
+              <span class="panel-label">AI altyapısı</span>
+              <h2>AI adası artık SoC omurgasına bağlı</h2>
               <p>
-                Non-AI mimari artık Vivado implementation kanıtı olan bir baseline. Bundan sonra AI tarafı
-                ayrı bir hızlandırıcı adası gibi eklenebilir: CSR, local AI memory ve interrupt hattı.
+                Memory-mapped AI_CSR, 30 KB AI_MEM, UART1 RX veri yükleyici ve done interrupt yolu eklendi.
+                Sonraki kritik faz resmi Micro Speech ağırlıkları ve accuracy/performance doğrulaması.
               </p>
             </div>
             <div class="next-cards">
-              <article><strong>AI_CSR</strong><span>Kontrol/status register alanı</span></article>
-              <article><strong>AI_MEM</strong><span>30 KB hedef veri belleği</span></article>
-              <article><strong>AI_IRQ</strong><span>İş bitti / hata interrupt yolu</span></article>
+              <article><strong>AI_CSR</strong><span>Start/status/result/cycle</span></article>
+              <article><strong>AI_MEM</strong><span>CPU + AI ortak 30 KB bellek</span></article>
+              <article><strong>AI_IRQ</strong><span>Fast IRQ bit 19</span></article>
             </div>
           </div>
         </section>

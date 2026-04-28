@@ -345,6 +345,46 @@ module cv32e40p_axi_soc #(
   logic        ext_axi_rvalid;
   logic        ext_axi_rready;
 
+  logic [31:0] pre_qspi_axi_awaddr;
+  logic [ 2:0] pre_qspi_axi_awprot;
+  logic        pre_qspi_axi_awvalid;
+  logic        pre_qspi_axi_awready;
+  logic [31:0] pre_qspi_axi_wdata;
+  logic [ 3:0] pre_qspi_axi_wstrb;
+  logic        pre_qspi_axi_wvalid;
+  logic        pre_qspi_axi_wready;
+  logic [ 1:0] pre_qspi_axi_bresp;
+  logic        pre_qspi_axi_bvalid;
+  logic        pre_qspi_axi_bready;
+  logic [31:0] pre_qspi_axi_araddr;
+  logic [ 2:0] pre_qspi_axi_arprot;
+  logic        pre_qspi_axi_arvalid;
+  logic        pre_qspi_axi_arready;
+  logic [31:0] pre_qspi_axi_rdata;
+  logic [ 1:0] pre_qspi_axi_rresp;
+  logic        pre_qspi_axi_rvalid;
+  logic        pre_qspi_axi_rready;
+
+  logic [31:0] ai_mem_axi_awaddr;
+  logic [ 2:0] ai_mem_axi_awprot;
+  logic        ai_mem_axi_awvalid;
+  logic        ai_mem_axi_awready;
+  logic [31:0] ai_mem_axi_wdata;
+  logic [ 3:0] ai_mem_axi_wstrb;
+  logic        ai_mem_axi_wvalid;
+  logic        ai_mem_axi_wready;
+  logic [ 1:0] ai_mem_axi_bresp;
+  logic        ai_mem_axi_bvalid;
+  logic        ai_mem_axi_bready;
+  logic [31:0] ai_mem_axi_araddr;
+  logic [ 2:0] ai_mem_axi_arprot;
+  logic        ai_mem_axi_arvalid;
+  logic        ai_mem_axi_arready;
+  logic [31:0] ai_mem_axi_rdata;
+  logic [ 1:0] ai_mem_axi_rresp;
+  logic        ai_mem_axi_rvalid;
+  logic        ai_mem_axi_rready;
+
   logic [31:0] qspi_xip_axi_awaddr;
   logic [ 2:0] qspi_xip_axi_awprot;
   logic        qspi_xip_axi_awvalid;
@@ -449,6 +489,46 @@ module cv32e40p_axi_soc #(
   logic        uart1_axi_rvalid;
   logic        uart1_axi_rready;
 
+  logic [31:0] ai_csr_mux_axi_awaddr;
+  logic [ 2:0] ai_csr_mux_axi_awprot;
+  logic        ai_csr_mux_axi_awvalid;
+  logic        ai_csr_mux_axi_awready;
+  logic [31:0] ai_csr_mux_axi_wdata;
+  logic [ 3:0] ai_csr_mux_axi_wstrb;
+  logic        ai_csr_mux_axi_wvalid;
+  logic        ai_csr_mux_axi_wready;
+  logic [ 1:0] ai_csr_mux_axi_bresp;
+  logic        ai_csr_mux_axi_bvalid;
+  logic        ai_csr_mux_axi_bready;
+  logic [31:0] ai_csr_mux_axi_araddr;
+  logic [ 2:0] ai_csr_mux_axi_arprot;
+  logic        ai_csr_mux_axi_arvalid;
+  logic        ai_csr_mux_axi_arready;
+  logic [31:0] ai_csr_mux_axi_rdata;
+  logic [ 1:0] ai_csr_mux_axi_rresp;
+  logic        ai_csr_mux_axi_rvalid;
+  logic        ai_csr_mux_axi_rready;
+
+  logic [31:0] ai_csr_axi_awaddr;
+  logic [ 2:0] ai_csr_axi_awprot;
+  logic        ai_csr_axi_awvalid;
+  logic        ai_csr_axi_awready;
+  logic [31:0] ai_csr_axi_wdata;
+  logic [ 3:0] ai_csr_axi_wstrb;
+  logic        ai_csr_axi_wvalid;
+  logic        ai_csr_axi_wready;
+  logic [ 1:0] ai_csr_axi_bresp;
+  logic        ai_csr_axi_bvalid;
+  logic        ai_csr_axi_bready;
+  logic [31:0] ai_csr_axi_araddr;
+  logic [ 2:0] ai_csr_axi_arprot;
+  logic        ai_csr_axi_arvalid;
+  logic        ai_csr_axi_arready;
+  logic [31:0] ai_csr_axi_rdata;
+  logic [ 1:0] ai_csr_axi_rresp;
+  logic        ai_csr_axi_rvalid;
+  logic        ai_csr_axi_rready;
+
   logic [31:0] apb_axi_awaddr;
   logic [ 2:0] apb_axi_awprot;
   logic        apb_axi_awvalid;
@@ -492,6 +572,48 @@ module cv32e40p_axi_soc #(
   logic [31:0] i2c_prdata;
   logic        i2c_pready;
   logic        i2c_pslverr;
+  logic        ai_irq;
+  logic        ai_accel_start;
+  logic        ai_uart_start;
+  logic [31:0] ai_input_base;
+  logic [31:0] ai_input_len;
+  logic [31:0] ai_output_base;
+  logic [15:0] ai_uart_baud_div;
+  logic        ai_accel_busy;
+  logic        ai_accel_done;
+  logic [ 1:0] ai_result_class;
+  logic signed [31:0] ai_result0;
+  logic signed [31:0] ai_result1;
+  logic signed [31:0] ai_result2;
+  logic signed [31:0] ai_result3;
+  logic [31:0] ai_cycle_count;
+  logic        ai_uart_active;
+  logic        ai_uart_done;
+  logic        ai_uart_error;
+  logic [31:0] ai_uart_byte_count;
+  logic        ai_mem_int_req;
+  logic        ai_mem_int_we;
+  logic [ 3:0] ai_mem_int_be;
+  logic [31:0] ai_mem_int_addr;
+  logic [31:0] ai_mem_int_wdata;
+  logic        ai_mem_int_gnt;
+  logic        ai_mem_int_rvalid;
+  logic [31:0] ai_mem_int_rdata;
+  logic        ai_uart_mem_req;
+  logic        ai_uart_mem_we;
+  logic [ 3:0] ai_uart_mem_be;
+  logic [31:0] ai_uart_mem_addr;
+  logic [31:0] ai_uart_mem_wdata;
+  logic        ai_uart_mem_gnt;
+  logic        ai_accel_mem_req;
+  logic        ai_accel_mem_we;
+  logic [ 3:0] ai_accel_mem_be;
+  logic [31:0] ai_accel_mem_addr;
+  logic [31:0] ai_accel_mem_wdata;
+  logic        ai_accel_mem_gnt;
+  logic        ai_accel_mem_rvalid;
+  logic [31:0] ai_accel_mem_rdata;
+  logic        ai_mem_rsp_accel_q;
   integer      apb_idx;
 
   soc_irq_router irq_router_i (
@@ -501,7 +623,7 @@ module cv32e40p_axi_soc #(
       .timer_irq_hi_i (timer_irq_hi_o),
       .uart0_irq_i    (1'b0),
       .uart1_irq_i    (1'b0),
-      .ai_irq_i       (1'b0),
+      .ai_irq_i       (ai_irq),
       .local_irq_o    (local_irq),
       .core_irq_o     (core_irq)
   );
@@ -998,12 +1120,11 @@ module cv32e40p_axi_soc #(
       .ext_axi_rready_o    (ext_axi_rready)
   );
 
-  // Keep the XIP flash window local so boot-copy and future execute-in-place accesses
-  // do not depend on the external AXI test memory.
+  // AI_MEM is a local 30 KB accelerator buffer behind a 32 KB decode window.
   soc_axi_lite_1x2 #(
-      .LOCAL0_BASE_ADDR (SOC_QSPI_XIP_BASE_ADDR),
-      .LOCAL0_SIZE_BYTES(SOC_QSPI_XIP_IMPL_BYTES)
-  ) axi_qspi_xip_mux_i (
+      .LOCAL0_BASE_ADDR (SOC_AI_MEM_BASE_ADDR),
+      .LOCAL0_SIZE_BYTES(SOC_AI_MEM_WINDOW_BYTES)
+  ) axi_ai_mem_mux_i (
       .clk_i               (clk_i),
       .rst_ni              (rst_ni),
       .s_axi_awaddr_i      (ext_axi_awaddr),
@@ -1025,6 +1146,172 @@ module cv32e40p_axi_soc #(
       .s_axi_rresp_o       (ext_axi_rresp),
       .s_axi_rvalid_o      (ext_axi_rvalid),
       .s_axi_rready_i      (ext_axi_rready),
+      .local0_axi_awaddr_o (ai_mem_axi_awaddr),
+      .local0_axi_awprot_o (ai_mem_axi_awprot),
+      .local0_axi_awvalid_o(ai_mem_axi_awvalid),
+      .local0_axi_awready_i(ai_mem_axi_awready),
+      .local0_axi_wdata_o  (ai_mem_axi_wdata),
+      .local0_axi_wstrb_o  (ai_mem_axi_wstrb),
+      .local0_axi_wvalid_o (ai_mem_axi_wvalid),
+      .local0_axi_wready_i (ai_mem_axi_wready),
+      .local0_axi_bresp_i  (ai_mem_axi_bresp),
+      .local0_axi_bvalid_i (ai_mem_axi_bvalid),
+      .local0_axi_bready_o (ai_mem_axi_bready),
+      .local0_axi_araddr_o (ai_mem_axi_araddr),
+      .local0_axi_arprot_o (ai_mem_axi_arprot),
+      .local0_axi_arvalid_o(ai_mem_axi_arvalid),
+      .local0_axi_arready_i(ai_mem_axi_arready),
+      .local0_axi_rdata_i  (ai_mem_axi_rdata),
+      .local0_axi_rresp_i  (ai_mem_axi_rresp),
+      .local0_axi_rvalid_i (ai_mem_axi_rvalid),
+      .local0_axi_rready_o (ai_mem_axi_rready),
+      .ext_axi_awaddr_o    (pre_qspi_axi_awaddr),
+      .ext_axi_awprot_o    (pre_qspi_axi_awprot),
+      .ext_axi_awvalid_o   (pre_qspi_axi_awvalid),
+      .ext_axi_awready_i   (pre_qspi_axi_awready),
+      .ext_axi_wdata_o     (pre_qspi_axi_wdata),
+      .ext_axi_wstrb_o     (pre_qspi_axi_wstrb),
+      .ext_axi_wvalid_o    (pre_qspi_axi_wvalid),
+      .ext_axi_wready_i    (pre_qspi_axi_wready),
+      .ext_axi_bresp_i     (pre_qspi_axi_bresp),
+      .ext_axi_bvalid_i    (pre_qspi_axi_bvalid),
+      .ext_axi_bready_o    (pre_qspi_axi_bready),
+      .ext_axi_araddr_o    (pre_qspi_axi_araddr),
+      .ext_axi_arprot_o    (pre_qspi_axi_arprot),
+      .ext_axi_arvalid_o   (pre_qspi_axi_arvalid),
+      .ext_axi_arready_i   (pre_qspi_axi_arready),
+      .ext_axi_rdata_i     (pre_qspi_axi_rdata),
+      .ext_axi_rresp_i     (pre_qspi_axi_rresp),
+      .ext_axi_rvalid_i    (pre_qspi_axi_rvalid),
+      .ext_axi_rready_o    (pre_qspi_axi_rready)
+  );
+
+  assign ai_mem_int_req = ai_uart_mem_req || ai_accel_mem_req;
+  assign ai_mem_int_we = ai_uart_mem_req ? ai_uart_mem_we : ai_accel_mem_we;
+  assign ai_mem_int_be = ai_uart_mem_req ? ai_uart_mem_be : ai_accel_mem_be;
+  assign ai_mem_int_addr = ai_uart_mem_req ? ai_uart_mem_addr : ai_accel_mem_addr;
+  assign ai_mem_int_wdata = ai_uart_mem_req ? ai_uart_mem_wdata : ai_accel_mem_wdata;
+  assign ai_uart_mem_gnt = ai_uart_mem_req ? ai_mem_int_gnt : 1'b0;
+  assign ai_accel_mem_gnt = (!ai_uart_mem_req && ai_accel_mem_req) ? ai_mem_int_gnt : 1'b0;
+  assign ai_accel_mem_rvalid = ai_mem_rsp_accel_q && ai_mem_int_rvalid;
+  assign ai_accel_mem_rdata = ai_mem_int_rdata;
+
+  always_ff @(posedge clk_i or negedge rst_ni) begin
+    if (!rst_ni) begin
+      ai_mem_rsp_accel_q <= 1'b0;
+    end else begin
+      if (ai_mem_int_gnt) begin
+        ai_mem_rsp_accel_q <= !ai_uart_mem_req && ai_accel_mem_req && !ai_accel_mem_we;
+      end else if (ai_mem_int_rvalid) begin
+        ai_mem_rsp_accel_q <= 1'b0;
+      end
+    end
+  end
+
+  soc_ai_mem ai_mem_i (
+      .clk_i          (clk_i),
+      .rst_ni         (rst_ni),
+      .s_axi_awaddr_i (ai_mem_axi_awaddr),
+      .s_axi_awprot_i (ai_mem_axi_awprot),
+      .s_axi_awvalid_i(ai_mem_axi_awvalid),
+      .s_axi_awready_o(ai_mem_axi_awready),
+      .s_axi_wdata_i  (ai_mem_axi_wdata),
+      .s_axi_wstrb_i  (ai_mem_axi_wstrb),
+      .s_axi_wvalid_i (ai_mem_axi_wvalid),
+      .s_axi_wready_o (ai_mem_axi_wready),
+      .s_axi_bresp_o  (ai_mem_axi_bresp),
+      .s_axi_bvalid_o (ai_mem_axi_bvalid),
+      .s_axi_bready_i (ai_mem_axi_bready),
+      .s_axi_araddr_i (ai_mem_axi_araddr),
+      .s_axi_arprot_i (ai_mem_axi_arprot),
+      .s_axi_arvalid_i(ai_mem_axi_arvalid),
+      .s_axi_arready_o(ai_mem_axi_arready),
+      .s_axi_rdata_o  (ai_mem_axi_rdata),
+      .s_axi_rresp_o  (ai_mem_axi_rresp),
+      .s_axi_rvalid_o (ai_mem_axi_rvalid),
+      .s_axi_rready_i (ai_mem_axi_rready),
+      .ai_req_i       (ai_mem_int_req),
+      .ai_we_i        (ai_mem_int_we),
+      .ai_be_i        (ai_mem_int_be),
+      .ai_addr_i      (ai_mem_int_addr),
+      .ai_wdata_i     (ai_mem_int_wdata),
+      .ai_gnt_o       (ai_mem_int_gnt),
+      .ai_rvalid_o    (ai_mem_int_rvalid),
+      .ai_rdata_o     (ai_mem_int_rdata)
+  );
+
+  soc_ai_uart_loader ai_uart_loader_i (
+      .clk_i        (clk_i),
+      .rst_ni       (rst_ni),
+      .start_i      (ai_uart_start),
+      .baud_div_i   (ai_uart_baud_div),
+      .input_base_i (ai_input_base),
+      .input_len_i  (ai_input_len),
+      .uart_rx_i    (uart1_rx_i),
+      .active_o     (ai_uart_active),
+      .done_o       (ai_uart_done),
+      .error_o      (ai_uart_error),
+      .byte_count_o (ai_uart_byte_count),
+      .mem_req_o    (ai_uart_mem_req),
+      .mem_we_o     (ai_uart_mem_we),
+      .mem_be_o     (ai_uart_mem_be),
+      .mem_addr_o   (ai_uart_mem_addr),
+      .mem_wdata_o  (ai_uart_mem_wdata),
+      .mem_gnt_i    (ai_uart_mem_gnt)
+  );
+
+  soc_ai_tinyconv_accel ai_accel_i (
+      .clk_i               (clk_i),
+      .rst_ni              (rst_ni),
+      .start_i             (ai_accel_start),
+      .input_base_i        (ai_input_base),
+      .input_len_i         (ai_input_len),
+      .output_base_i       (ai_output_base),
+      .busy_o              (ai_accel_busy),
+      .done_o              (ai_accel_done),
+      .result_class_o      (ai_result_class),
+      .result0_o           (ai_result0),
+      .result1_o           (ai_result1),
+      .result2_o           (ai_result2),
+      .result3_o           (ai_result3),
+      .cycle_count_o       (ai_cycle_count),
+      .mem_req_o           (ai_accel_mem_req),
+      .mem_we_o            (ai_accel_mem_we),
+      .mem_be_o            (ai_accel_mem_be),
+      .mem_addr_o          (ai_accel_mem_addr),
+      .mem_wdata_o         (ai_accel_mem_wdata),
+      .mem_gnt_i           (ai_accel_mem_gnt),
+      .mem_rvalid_i        (ai_accel_mem_rvalid),
+      .mem_rdata_i         (ai_accel_mem_rdata)
+  );
+
+  // Keep the XIP flash window local so boot-copy and future execute-in-place accesses
+  // do not depend on the external AXI test memory.
+  soc_axi_lite_1x2 #(
+      .LOCAL0_BASE_ADDR (SOC_QSPI_XIP_BASE_ADDR),
+      .LOCAL0_SIZE_BYTES(SOC_QSPI_XIP_IMPL_BYTES)
+  ) axi_qspi_xip_mux_i (
+      .clk_i               (clk_i),
+      .rst_ni              (rst_ni),
+      .s_axi_awaddr_i      (pre_qspi_axi_awaddr),
+      .s_axi_awprot_i      (pre_qspi_axi_awprot),
+      .s_axi_awvalid_i     (pre_qspi_axi_awvalid),
+      .s_axi_awready_o     (pre_qspi_axi_awready),
+      .s_axi_wdata_i       (pre_qspi_axi_wdata),
+      .s_axi_wstrb_i       (pre_qspi_axi_wstrb),
+      .s_axi_wvalid_i      (pre_qspi_axi_wvalid),
+      .s_axi_wready_o      (pre_qspi_axi_wready),
+      .s_axi_bresp_o       (pre_qspi_axi_bresp),
+      .s_axi_bvalid_o      (pre_qspi_axi_bvalid),
+      .s_axi_bready_i      (pre_qspi_axi_bready),
+      .s_axi_araddr_i      (pre_qspi_axi_araddr),
+      .s_axi_arprot_i      (pre_qspi_axi_arprot),
+      .s_axi_arvalid_i     (pre_qspi_axi_arvalid),
+      .s_axi_arready_o     (pre_qspi_axi_arready),
+      .s_axi_rdata_o       (pre_qspi_axi_rdata),
+      .s_axi_rresp_o       (pre_qspi_axi_rresp),
+      .s_axi_rvalid_o      (pre_qspi_axi_rvalid),
+      .s_axi_rready_i      (pre_qspi_axi_rready),
       .local0_axi_awaddr_o (qspi_xip_axi_awaddr),
       .local0_axi_awprot_o (qspi_xip_axi_awprot),
       .local0_axi_awvalid_o(qspi_xip_axi_awvalid),
@@ -1283,25 +1570,25 @@ module cv32e40p_axi_soc #(
       .local0_axi_rresp_i  (uart1_axi_rresp),
       .local0_axi_rvalid_i (uart1_axi_rvalid),
       .local0_axi_rready_o (uart1_axi_rready),
-      .ext_axi_awaddr_o    (apb_axi_awaddr),
-      .ext_axi_awprot_o    (apb_axi_awprot),
-      .ext_axi_awvalid_o   (apb_axi_awvalid),
-      .ext_axi_awready_i   (apb_axi_awready),
-      .ext_axi_wdata_o     (apb_axi_wdata),
-      .ext_axi_wstrb_o     (apb_axi_wstrb),
-      .ext_axi_wvalid_o    (apb_axi_wvalid),
-      .ext_axi_wready_i    (apb_axi_wready),
-      .ext_axi_bresp_i     (apb_axi_bresp),
-      .ext_axi_bvalid_i    (apb_axi_bvalid),
-      .ext_axi_bready_o    (apb_axi_bready),
-      .ext_axi_araddr_o    (apb_axi_araddr),
-      .ext_axi_arprot_o    (apb_axi_arprot),
-      .ext_axi_arvalid_o   (apb_axi_arvalid),
-      .ext_axi_arready_i   (apb_axi_arready),
-      .ext_axi_rdata_i     (apb_axi_rdata),
-      .ext_axi_rresp_i     (apb_axi_rresp),
-      .ext_axi_rvalid_i    (apb_axi_rvalid),
-      .ext_axi_rready_o    (apb_axi_rready)
+      .ext_axi_awaddr_o    (ai_csr_mux_axi_awaddr),
+      .ext_axi_awprot_o    (ai_csr_mux_axi_awprot),
+      .ext_axi_awvalid_o   (ai_csr_mux_axi_awvalid),
+      .ext_axi_awready_i   (ai_csr_mux_axi_awready),
+      .ext_axi_wdata_o     (ai_csr_mux_axi_wdata),
+      .ext_axi_wstrb_o     (ai_csr_mux_axi_wstrb),
+      .ext_axi_wvalid_o    (ai_csr_mux_axi_wvalid),
+      .ext_axi_wready_i    (ai_csr_mux_axi_wready),
+      .ext_axi_bresp_i     (ai_csr_mux_axi_bresp),
+      .ext_axi_bvalid_i    (ai_csr_mux_axi_bvalid),
+      .ext_axi_bready_o    (ai_csr_mux_axi_bready),
+      .ext_axi_araddr_o    (ai_csr_mux_axi_araddr),
+      .ext_axi_arprot_o    (ai_csr_mux_axi_arprot),
+      .ext_axi_arvalid_o   (ai_csr_mux_axi_arvalid),
+      .ext_axi_arready_i   (ai_csr_mux_axi_arready),
+      .ext_axi_rdata_i     (ai_csr_mux_axi_rdata),
+      .ext_axi_rresp_i     (ai_csr_mux_axi_rresp),
+      .ext_axi_rvalid_i    (ai_csr_mux_axi_rvalid),
+      .ext_axi_rready_o    (ai_csr_mux_axi_rready)
   );
 
   soc_axi_lite_uart uart1_i (
@@ -1328,6 +1615,114 @@ module cv32e40p_axi_soc #(
       .s_axi_rready_i (uart1_axi_rready),
       .uart_rx_i      (uart1_rx_i),
       .uart_tx_o      (uart1_tx_o)
+  );
+
+  soc_axi_lite_1x2 #(
+      .LOCAL0_BASE_ADDR (SOC_AI_CSR_BASE_ADDR),
+      .LOCAL0_SIZE_BYTES(SOC_AI_CSR_IMPL_BYTES)
+  ) axi_ai_csr_mux_i (
+      .clk_i               (clk_i),
+      .rst_ni              (rst_ni),
+      .s_axi_awaddr_i      (ai_csr_mux_axi_awaddr),
+      .s_axi_awprot_i      (ai_csr_mux_axi_awprot),
+      .s_axi_awvalid_i     (ai_csr_mux_axi_awvalid),
+      .s_axi_awready_o     (ai_csr_mux_axi_awready),
+      .s_axi_wdata_i       (ai_csr_mux_axi_wdata),
+      .s_axi_wstrb_i       (ai_csr_mux_axi_wstrb),
+      .s_axi_wvalid_i      (ai_csr_mux_axi_wvalid),
+      .s_axi_wready_o      (ai_csr_mux_axi_wready),
+      .s_axi_bresp_o       (ai_csr_mux_axi_bresp),
+      .s_axi_bvalid_o      (ai_csr_mux_axi_bvalid),
+      .s_axi_bready_i      (ai_csr_mux_axi_bready),
+      .s_axi_araddr_i      (ai_csr_mux_axi_araddr),
+      .s_axi_arprot_i      (ai_csr_mux_axi_arprot),
+      .s_axi_arvalid_i     (ai_csr_mux_axi_arvalid),
+      .s_axi_arready_o     (ai_csr_mux_axi_arready),
+      .s_axi_rdata_o       (ai_csr_mux_axi_rdata),
+      .s_axi_rresp_o       (ai_csr_mux_axi_rresp),
+      .s_axi_rvalid_o      (ai_csr_mux_axi_rvalid),
+      .s_axi_rready_i      (ai_csr_mux_axi_rready),
+      .local0_axi_awaddr_o (ai_csr_axi_awaddr),
+      .local0_axi_awprot_o (ai_csr_axi_awprot),
+      .local0_axi_awvalid_o(ai_csr_axi_awvalid),
+      .local0_axi_awready_i(ai_csr_axi_awready),
+      .local0_axi_wdata_o  (ai_csr_axi_wdata),
+      .local0_axi_wstrb_o  (ai_csr_axi_wstrb),
+      .local0_axi_wvalid_o (ai_csr_axi_wvalid),
+      .local0_axi_wready_i (ai_csr_axi_wready),
+      .local0_axi_bresp_i  (ai_csr_axi_bresp),
+      .local0_axi_bvalid_i (ai_csr_axi_bvalid),
+      .local0_axi_bready_o (ai_csr_axi_bready),
+      .local0_axi_araddr_o (ai_csr_axi_araddr),
+      .local0_axi_arprot_o (ai_csr_axi_arprot),
+      .local0_axi_arvalid_o(ai_csr_axi_arvalid),
+      .local0_axi_arready_i(ai_csr_axi_arready),
+      .local0_axi_rdata_i  (ai_csr_axi_rdata),
+      .local0_axi_rresp_i  (ai_csr_axi_rresp),
+      .local0_axi_rvalid_i (ai_csr_axi_rvalid),
+      .local0_axi_rready_o (ai_csr_axi_rready),
+      .ext_axi_awaddr_o    (apb_axi_awaddr),
+      .ext_axi_awprot_o    (apb_axi_awprot),
+      .ext_axi_awvalid_o   (apb_axi_awvalid),
+      .ext_axi_awready_i   (apb_axi_awready),
+      .ext_axi_wdata_o     (apb_axi_wdata),
+      .ext_axi_wstrb_o     (apb_axi_wstrb),
+      .ext_axi_wvalid_o    (apb_axi_wvalid),
+      .ext_axi_wready_i    (apb_axi_wready),
+      .ext_axi_bresp_i     (apb_axi_bresp),
+      .ext_axi_bvalid_i    (apb_axi_bvalid),
+      .ext_axi_bready_o    (apb_axi_bready),
+      .ext_axi_araddr_o    (apb_axi_araddr),
+      .ext_axi_arprot_o    (apb_axi_arprot),
+      .ext_axi_arvalid_o   (apb_axi_arvalid),
+      .ext_axi_arready_i   (apb_axi_arready),
+      .ext_axi_rdata_i     (apb_axi_rdata),
+      .ext_axi_rresp_i     (apb_axi_rresp),
+      .ext_axi_rvalid_i    (apb_axi_rvalid),
+      .ext_axi_rready_o    (apb_axi_rready)
+  );
+
+  soc_ai_csr ai_csr_i (
+      .clk_i                 (clk_i),
+      .rst_ni                (rst_ni),
+      .s_axi_awaddr_i        (ai_csr_axi_awaddr),
+      .s_axi_awprot_i        (ai_csr_axi_awprot),
+      .s_axi_awvalid_i       (ai_csr_axi_awvalid),
+      .s_axi_awready_o       (ai_csr_axi_awready),
+      .s_axi_wdata_i         (ai_csr_axi_wdata),
+      .s_axi_wstrb_i         (ai_csr_axi_wstrb),
+      .s_axi_wvalid_i        (ai_csr_axi_wvalid),
+      .s_axi_wready_o        (ai_csr_axi_wready),
+      .s_axi_bresp_o         (ai_csr_axi_bresp),
+      .s_axi_bvalid_o        (ai_csr_axi_bvalid),
+      .s_axi_bready_i        (ai_csr_axi_bready),
+      .s_axi_araddr_i        (ai_csr_axi_araddr),
+      .s_axi_arprot_i        (ai_csr_axi_arprot),
+      .s_axi_arvalid_i       (ai_csr_axi_arvalid),
+      .s_axi_arready_o       (ai_csr_axi_arready),
+      .s_axi_rdata_o         (ai_csr_axi_rdata),
+      .s_axi_rresp_o         (ai_csr_axi_rresp),
+      .s_axi_rvalid_o        (ai_csr_axi_rvalid),
+      .s_axi_rready_i        (ai_csr_axi_rready),
+      .accel_start_o         (ai_accel_start),
+      .uart_start_o          (ai_uart_start),
+      .input_base_o          (ai_input_base),
+      .input_len_o           (ai_input_len),
+      .output_base_o         (ai_output_base),
+      .uart_baud_div_o       (ai_uart_baud_div),
+      .accel_busy_i          (ai_accel_busy),
+      .accel_done_i          (ai_accel_done),
+      .accel_result_class_i  (ai_result_class),
+      .accel_result0_i       (ai_result0),
+      .accel_result1_i       (ai_result1),
+      .accel_result2_i       (ai_result2),
+      .accel_result3_i       (ai_result3),
+      .accel_cycle_count_i   (ai_cycle_count),
+      .uart_active_i         (ai_uart_active),
+      .uart_done_i           (ai_uart_done),
+      .uart_error_i          (ai_uart_error),
+      .uart_byte_count_i     (ai_uart_byte_count),
+      .irq_o                 (ai_irq)
   );
 
   soc_axi_lite_apb_island #(

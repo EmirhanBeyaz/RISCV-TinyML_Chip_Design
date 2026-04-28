@@ -2,6 +2,7 @@ SIM ?= iverilog
 SIMFLAGS ?= -g2012
 RUN ?= vvp
 BUILD_DIR ?= build
+AI_PYTHON ?= python3
 VERILATOR ?= verilator
 VERILATOR_FLAGS ?= --binary --timing -Wno-fatal -Wno-TIMESCALEMOD -Wno-BLKANDNBLK -Wno-UNOPTFLAT -Wno-COMBDLY -Wno-WIDTHEXPAND -Wno-WIDTHTRUNC -Wno-CASEINCOMPLETE -Wno-DECLFILENAME -Wno-UNUSEDSIGNAL -Wno-UNUSEDPARAM -Wno-BLKSEQ
 
@@ -27,6 +28,7 @@ SOC_COMMON_RTL := \
 	soc_map_pkg.sv soc_irq_router.sv cv32e40p_obi_to_axi_lite.sv soc_axi_lite_1x2.sv \
 	$(SOC_QSPI_ZIPCPU_RTL) \
 	soc_qspi_init_seq.sv soc_qspi_cfg_mux.sv \
+	soc_ai_mem.sv soc_ai_uart_loader.sv soc_ai_csr.sv soc_ai_tinyconv_accel.sv \
 	soc_axi_lite_uart.sv soc_axi_lite_apb_island.sv soc_apb_qspi_cfg.sv soc_apb_gpio.sv \
 	soc_boot_copy_xip.sv soc_apb_i2c_master.sv \
 	soc_apb_timer.sv $(SOC_MEM_RTL)
@@ -167,6 +169,51 @@ uart-smoke: $(BUILD_DIR)
 	tb_soc_axi_lite_uart.sv
 	$(RUN) $(BUILD_DIR)/tb_soc_axi_lite_uart.vvp
 
+.PHONY: ai-mem-smoke
+ai-mem-smoke: $(BUILD_DIR)
+	$(SIM) $(SIMFLAGS) -s tb_soc_ai_mem \
+	-o $(BUILD_DIR)/tb_soc_ai_mem.vvp \
+	soc_map_pkg.sv soc_mem_sp.sv soc_ai_mem.sv tb_soc_ai_mem.sv
+	$(RUN) $(BUILD_DIR)/tb_soc_ai_mem.vvp
+
+.PHONY: ai-csr-smoke
+ai-csr-smoke: $(BUILD_DIR)
+	$(SIM) $(SIMFLAGS) -s tb_soc_ai_csr \
+	-o $(BUILD_DIR)/tb_soc_ai_csr.vvp \
+	soc_map_pkg.sv soc_ai_csr.sv tb_soc_ai_csr.sv
+	$(RUN) $(BUILD_DIR)/tb_soc_ai_csr.vvp
+
+.PHONY: ai-uart-loader-smoke
+ai-uart-loader-smoke: $(BUILD_DIR)
+	$(SIM) $(SIMFLAGS) -I third_party/uart/rtl -s tb_soc_ai_uart_loader \
+	-o $(BUILD_DIR)/tb_soc_ai_uart_loader.vvp \
+	soc_map_pkg.sv third_party/uart/rtl/uart/uart_rx.v soc_ai_uart_loader.sv tb_soc_ai_uart_loader.sv
+	$(RUN) $(BUILD_DIR)/tb_soc_ai_uart_loader.vvp
+
+.PHONY: ai-accel-smoke
+ai-accel-smoke: $(BUILD_DIR)
+	$(SIM) $(SIMFLAGS) -s tb_soc_ai_tinyconv_accel \
+	-o $(BUILD_DIR)/tb_soc_ai_tinyconv_accel.vvp \
+	soc_map_pkg.sv soc_ai_tinyconv_accel.sv tb_soc_ai_tinyconv_accel.sv
+	$(RUN) $(BUILD_DIR)/tb_soc_ai_tinyconv_accel.vvp
+
+.PHONY: ai-model-tool-smoke
+ai-model-tool-smoke: $(BUILD_DIR)
+	$(AI_PYTHON) tools/ai/export_tinyconv_assets.py \
+		--self-test \
+		--out-dir $(BUILD_DIR)/ai_model_tool_smoke \
+		--sv-out $(BUILD_DIR)/ai_model_tool_smoke/soc_ai_model_pkg.sv
+
+.PHONY: ai-model-tflite-smoke
+ai-model-tflite-smoke: $(BUILD_DIR)
+	$(AI_PYTHON) tools/ai/make_synthetic_tinyconv_tflite.py \
+		--out-dir $(BUILD_DIR)/ai_model_tflite_smoke
+	$(AI_PYTHON) tools/ai/export_tinyconv_assets.py \
+		--model-tflite $(BUILD_DIR)/ai_model_tflite_smoke/synthetic_tinyconv_int8.tflite \
+		--input-npy $(BUILD_DIR)/ai_model_tflite_smoke/input_1960_int8.npy \
+		--out-dir $(BUILD_DIR)/ai_model_tflite_smoke/extracted \
+		--sv-out $(BUILD_DIR)/ai_model_tflite_smoke/extracted/soc_ai_model_pkg.sv
+
 .PHONY: soc-gpio-smoke
 soc-gpio-smoke: $(BUILD_DIR)
 	$(VERILATOR) $(VERILATOR_FLAGS) --top-module tb_cv32e40p_axi_soc_gpio \
@@ -240,7 +287,7 @@ soc-dmem-local-smoke: $(BUILD_DIR)
 	./$(BUILD_DIR)/soc_dmem_local/Vtb_cv32e40p_axi_soc_dmem_local
 
 .PHONY: all
-all: map-check imem-smoke imem-axi-smoke dmem-smoke rom-smoke irq-router-smoke bridge-smoke wrapper-smoke soc-e2e apb-island-smoke qspi-cfg-smoke qspi-init-smoke qspi-xip-smoke apb-gpio-smoke i2c-smoke uart-smoke soc-qspi-cfg-smoke soc-gpio-smoke soc-timer-smoke soc-uart0-smoke soc-uart1-smoke soc-i2c-smoke soc-rom-local-smoke soc-imem-local-smoke soc-dmem-local-smoke boot-copy-smoke
+all: map-check imem-smoke imem-axi-smoke dmem-smoke rom-smoke irq-router-smoke bridge-smoke wrapper-smoke soc-e2e apb-island-smoke qspi-cfg-smoke qspi-init-smoke qspi-xip-smoke apb-gpio-smoke i2c-smoke uart-smoke ai-mem-smoke ai-csr-smoke ai-uart-loader-smoke ai-accel-smoke soc-qspi-cfg-smoke soc-gpio-smoke soc-timer-smoke soc-uart0-smoke soc-uart1-smoke soc-i2c-smoke soc-rom-local-smoke soc-imem-local-smoke soc-dmem-local-smoke boot-copy-smoke
 
 .PHONY: full
 full: all real-core-smoke rom-boot-smoke rom-handoff-smoke rom-image-smoke

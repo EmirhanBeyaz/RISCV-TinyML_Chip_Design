@@ -1,6 +1,6 @@
 # VHDL SoC Workspace
 
-Bu repo, `CV32E40P` tabanli mikrodenetleyici SoC gelistirmesi icin kullanilan calisma alanidir. Su anki odak, `AI` harici mimariyi temiz, test edilebilir ve Vivado'da sentezlenebilir halde tutmaktir.
+Bu repo, `CV32E40P` tabanli mikrodenetleyici SoC gelistirmesi icin kullanilan calisma alanidir. Su anki odak, testli non-AI baseline uzerine `AI_CSR`, `AI_MEM`, `AI_UART` veri yukleyici ve RTL hizlandirici adasini eklemektir.
 
 Bugun itibariyla repo su ana kadar su zinciri calistirabiliyor:
 
@@ -8,13 +8,15 @@ Bugun itibariyla repo su ana kadar su zinciri calistirabiliyor:
 - `OBI -> AXI-Lite` veri yolu koprusu
 - yerel `ROM / IMEM / DMEM`
 - `UART0`, `UART1`, `GPIO`, `Timer`, `I2C`, `QSPI_CFG`
+- `AI_CSR`, `AI_MEM`, `AI_UART` loader, `AI_IRQ`
+- sentetik agirlikli TinyConv-sekilli RTL hizlandirici iskeleti
 - yerel `QSPI_XIP`
 - `ROM -> QSPI/XIP -> IMEM -> handoff` boot akisi
 - `fpga_top` FPGA wrapper
 - self-checking sim testleri
 - Vivado `RTL elaboration`, `synthesis` ve `implementation` checkpoint
 
-Bu repo su an kart ustunde final demo bitstream'i degil. `fpga_top` implementation seviyesine geldi; karta ozel `.xdc`, gercek pin-seviyesi flash bring-up ve `AI` entegrasyonu sonraki asamalardadir.
+Bu repo su an kart ustunde final demo bitstream'i degil. `fpga_top` implementation seviyesine geldi; karta ozel `.xdc`, gercek pin-seviyesi flash bring-up, egitilmis Micro Speech agirliklari ve accuracy/performance sign-off sonraki asamalardadir.
 
 ## Klasor Yapisi
 
@@ -42,6 +44,7 @@ Bu repo su an kart ustunde final demo bitstream'i degil. `fpga_top` implementati
   - `IMEM alias`
   - `DMEM`
   - `MMIO`
+  - `AI_MEM`
   - `QSPI_XIP`
   - kalan erisimler `external AXI`
 
@@ -59,10 +62,13 @@ Detaylar:
 
 ### Cevre Birimleri
 
-Su anki aktif non-AI peripheral set:
+Su anki aktif peripheral set:
 
 - `UART0`: native `AXI-Lite`
 - `UART1`: native `AXI-Lite`
+- `AI_CSR`: native `AXI-Lite`
+- `AI_MEM`: CPU AXI-Lite + AI internal port
+- `AI_UART loader`: UART1 RX hattini dinleyerek AI_MEM'e byte stream yazar
 - `GPIO`: `APB island` arkasinda
 - `Timer`: `APB island` arkasinda
 - `I2C master`: `APB island` arkasinda
@@ -116,6 +122,10 @@ Buradan bakarak su ana mimariyi gorebilirsin:
 ### Peripheral Katmani
 
 - [soc/soc_axi_lite_uart.sv](./soc/soc_axi_lite_uart.sv#L1)
+- [soc/soc_ai_csr.sv](./soc/soc_ai_csr.sv#L1)
+- [soc/soc_ai_mem.sv](./soc/soc_ai_mem.sv#L1)
+- [soc/soc_ai_uart_loader.sv](./soc/soc_ai_uart_loader.sv#L1)
+- [soc/soc_ai_tinyconv_accel.sv](./soc/soc_ai_tinyconv_accel.sv#L1)
 - [soc/soc_axi_lite_apb_island.sv](./soc/soc_axi_lite_apb_island.sv#L1)
 - [soc/soc_apb_gpio.sv](./soc/soc_apb_gpio.sv#L1)
 - [soc/soc_apb_timer.sv](./soc/soc_apb_timer.sv#L1)
@@ -127,6 +137,7 @@ Buradan bakarak su ana mimariyi gorebilirsin:
 - [TEAM_GUIDE.md](./TEAM_GUIDE.md#L1)
 - [soc/ARCHITECTURE_DECISIONS_V0.md](./soc/ARCHITECTURE_DECISIONS_V0.md#L1)
 - [soc/MEMORY_MAP_V0.md](./soc/MEMORY_MAP_V0.md#L1)
+- [soc/AI_ACCELERATOR_STATUS.md](./soc/AI_ACCELERATOR_STATUS.md#L1)
 - [soc/QSPI_CFG_REGMAP.md](./soc/QSPI_CFG_REGMAP.md#L1)
 - [soc/VIVADO_TEST_GUIDE.md](./soc/VIVADO_TEST_GUIDE.md#L1)
 - [soc/VIVADO_IMPLEMENTATION_CHECKPOINT.md](./soc/VIVADO_IMPLEMENTATION_CHECKPOINT.md#L1)
@@ -243,6 +254,15 @@ AI harici tarafta su alanlar guvenle ilerlemis durumda:
 - `fpga_top`
 - Vivado smoke, sentez ve implementation checkpoint
 
+AI tarafinda su altyapi artik entegre ve smoke testlidir:
+
+- `AI_CSR` register alani: `ID`, `CTRL`, `STATUS`, input/output adresleri, sonuc ve cycle sayaci
+- `AI_MEM`: `0x2000_0000` altinda CPU ve AI internal erisimli 30 KB local bellek
+- `AI_UART loader`: UART1 RX uzerinden AI_MEM'e stream yazma
+- `AI_IRQ`: hizlandirici done durumunda fast IRQ bit 19'a bagli
+- `soc_ai_tinyconv_accel`: 49x40 input, depthwise-conv sekilli tarama, ReLU, FC-benzeri skor ve argmax akisi
+- `tools/ai/export_tinyconv_assets.py`: gercek `.tflite`/`.npz` model asset ve golden uretim araci
+
 ## Su An Ne Eksik
 
 AI harici mimaride hala sonraki fazda olan basliklar:
@@ -258,12 +278,13 @@ AI harici mimaride hala sonraki fazda olan basliklar:
   - `UART print`
   - coklu peripheral bring-up
 
-AI tarafinda ise ayri olarak kalanlar:
+AI tarafinda kalan yarismaya kritik isler:
 
-- `AI_CSR`
-- `AI_MEM`
-- `AI IRQ`
-- accelerator entegrasyonu
+- Resmi TFLite Micro Speech quantized modeli bu tool ile islemek: `make -C soc ai-model-tool-smoke` akisi hazir, gercek `.tflite` dosyasi gerekiyor
+- Sentetik agirlik fonksiyonlarini gercek egitilmis agirlik/bias/scale degerleriyle degistirmek
+- Accuracy hedefini yazilim referansina gore `%10` pencerede raporlamak
+- CPU firmware ile UART1 input -> AI start -> IRQ ISR -> UART0 result akisina e2e demo eklemek
+- AXI/AXI-Lite protocol checker ve fiziksel tasarim/GDSII sign-off akisini tamamlamak
 
 ## Repo Icinde Calisirken Pratik Kurallar
 
