@@ -8,7 +8,13 @@ This directory contains the extraction/golden path for the AI accelerator.
 
 - `tinyconv_assets.npz`: normalized weights, biases, quantization values, labels.
 - `manifest.json`: shape and quantization summary.
-- `soc_ai_model_pkg.sv`: generated SystemVerilog package for the next RTL phase.
+- `soc_ai_model_pkg.sv`: generated SystemVerilog package with weights, biases,
+  zero-points and fixed-point requantization parameters.
+- `soc_ai_model_smoke_golden_pkg.sv`, `smoke_input_vector.memh`,
+  `smoke_rtl_scores.npy`, `smoke_rtl_result_class.txt`: reduced-size current
+  RTL-datapath goldens for fast package-based smoke tests.
+- `soc_ai_model_golden_pkg.sv`, `input_vector.memh`, `rtl_scores.npy`,
+  `rtl_result_class.txt`: full-shape current RTL-datapath goldens.
 - `ref_depthwise_output.npy`, `ref_logits.npy`, `ref_result_class.txt`: NumPy reference goldens when an input vector is provided.
 - `tflite_*` golden files when a `.tflite` model is used with TensorFlow Lite installed.
 
@@ -21,6 +27,31 @@ make ai-model-tool-smoke
 ```
 
 This uses deterministic synthetic weights to verify the tool path without requiring TensorFlow.
+It still requires NumPy because the asset/golden path is NumPy-based.
+When NumPy is available, the generated synthetic package can also be compiled
+through a reduced-size accelerator smoke path. This compares the RTL output
+against generated synthetic RTL golden files while keeping Icarus runs quick:
+
+```sh
+make ai-accel-model-smoke
+```
+
+The synthetic smoke intentionally uses non-zero input, output, and weight
+zero-points so the RTL offset/requantization path is exercised before the real
+`.tflite` model is available.
+
+The CSR/MEM/accelerator path can be checked together with:
+
+```sh
+make ai-island-e2e-smoke
+```
+
+The UART loader can also be included in that path, covering
+UART RX -> AI_MEM -> CSR start -> accelerator result:
+
+```sh
+make ai-uart-to-accel-e2e-smoke
+```
 
 After installing TensorFlow, the `.tflite` extraction path can be tested with a generated TinyConv model:
 

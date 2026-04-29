@@ -1,5 +1,5 @@
 module soc_rom #(
-    parameter string INIT_FILE = "",
+    parameter INIT_FILE = "",
     parameter int DEPTH_WORDS = 1024
 ) (
     input  logic        clk_i,

@@ -6,14 +6,23 @@ module cv32e40p_axi_soc #(
     parameter int FPU_OTHERS_LAT = 0,
     parameter bit ZFINX = 0,
     parameter int NUM_MHPMCOUNTERS = 1,
-    parameter string ROM_INIT_FILE = "",
-    parameter string IMEM_INIT_FILE = "",
+    parameter ROM_INIT_FILE = "",
+    parameter IMEM_INIT_FILE = "",
     parameter bit QSPI_SIM_XIP_ENABLE = 1'b0,
-    parameter string QSPI_SIM_XIP_INIT_FILE = "",
+    parameter QSPI_SIM_XIP_INIT_FILE = "",
     parameter int QSPI_SIM_XIP_DEPTH_WORDS = 256,
     parameter bit BOOT_COPY_XIP_ENABLE = 1'b0,
     parameter bit QSPI_INIT_ENABLE = 1'b1,
-    parameter int BOOT_COPY_WORDS = 2048
+    parameter int BOOT_COPY_WORDS = 2048,
+    parameter int AI_ACCEL_INPUT_H = 49,
+    parameter int AI_ACCEL_INPUT_W = 40,
+    parameter int AI_ACCEL_OUT_H = 25,
+    parameter int AI_ACCEL_OUT_W = 20,
+    parameter int AI_ACCEL_CHANNELS = 8,
+    parameter int AI_ACCEL_K_H = 10,
+    parameter int AI_ACCEL_K_W = 8,
+    parameter int AI_ACCEL_PAD_H = 4,
+    parameter int AI_ACCEL_PAD_W = 3
 ) (
     input  logic        clk_i,
     input  logic        rst_ni,
@@ -1260,7 +1269,17 @@ module cv32e40p_axi_soc #(
       .mem_gnt_i    (ai_uart_mem_gnt)
   );
 
-  soc_ai_tinyconv_accel ai_accel_i (
+  soc_ai_tinyconv_accel #(
+      .INPUT_H (AI_ACCEL_INPUT_H),
+      .INPUT_W (AI_ACCEL_INPUT_W),
+      .OUT_H   (AI_ACCEL_OUT_H),
+      .OUT_W   (AI_ACCEL_OUT_W),
+      .CHANNELS(AI_ACCEL_CHANNELS),
+      .K_H     (AI_ACCEL_K_H),
+      .K_W     (AI_ACCEL_K_W),
+      .PAD_H   (AI_ACCEL_PAD_H),
+      .PAD_W   (AI_ACCEL_PAD_W)
+  ) ai_accel_i (
       .clk_i               (clk_i),
       .rst_ni              (rst_ni),
       .start_i             (ai_accel_start),

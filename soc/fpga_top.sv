@@ -4,8 +4,8 @@ module fpga_top #(
     parameter logic [31:0] DM_HALT_ADDR          = 32'h0000_0000,
     parameter logic [31:0] DM_EXCEPTION_ADDR     = 32'h0000_0000,
     parameter logic [31:0] HART_ID               = 32'h0000_0000,
-    parameter string       ROM_INIT_FILE         = "",
-    parameter string       IMEM_INIT_FILE        = "",
+    parameter              ROM_INIT_FILE         = "",
+    parameter              IMEM_INIT_FILE        = "",
     parameter bit          BOOT_COPY_XIP_ENABLE  = 1'b0,
     parameter bit          QSPI_INIT_ENABLE      = 1'b1,
     parameter int unsigned EXT_AXI_RAM_WORDS     = 1024

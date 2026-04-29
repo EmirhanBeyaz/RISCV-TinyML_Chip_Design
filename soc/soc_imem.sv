@@ -1,5 +1,5 @@
 module soc_imem #(
-    parameter string INIT_FILE = "",
+    parameter INIT_FILE = "",
     parameter int DEPTH_WORDS = 2048
 ) (
     input  logic        clk_i,

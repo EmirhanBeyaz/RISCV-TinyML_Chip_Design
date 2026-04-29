@@ -11,7 +11,7 @@ module soc_axi_lite_qspi_xip #(
     parameter int unsigned RDDELAY = 1,
     parameter int unsigned NDUMMY = 6,
     parameter bit          SIM_XIP_ENABLE = 1'b0,
-    parameter string       SIM_XIP_INIT_FILE = "",
+    parameter              SIM_XIP_INIT_FILE = "",
     parameter int unsigned SIM_XIP_DEPTH_WORDS = 256
 ) (
     input  logic                      clk_i,
@@ -53,7 +53,7 @@ module soc_axi_lite_qspi_xip #(
 
   localparam int STRB_WIDTH = DATA_WIDTH / 8;
   localparam logic [31:0] XIP_WINDOW_BYTES = (32'd1 << LGFLASHSZ);
-  localparam string SIM_XIP_INIT_FILE_P = SIM_XIP_INIT_FILE;
+  localparam SIM_XIP_INIT_FILE_P = SIM_XIP_INIT_FILE;
 
   typedef enum logic [1:0] {
     RD_IDLE,

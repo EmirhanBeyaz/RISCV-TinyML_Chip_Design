@@ -3,6 +3,11 @@ SIMFLAGS ?= -g2012
 RUN ?= vvp
 BUILD_DIR ?= build
 AI_PYTHON ?= python3
+AI_MODEL_SMOKE_DIR ?= $(BUILD_DIR)/ai_model_tool_smoke
+AI_MODEL_PKG ?= $(AI_MODEL_SMOKE_DIR)/soc_ai_model_pkg.sv
+AI_MODEL_GOLDEN_PKG ?= $(AI_MODEL_SMOKE_DIR)/soc_ai_model_smoke_golden_pkg.sv
+AI_MODEL_FULL_GOLDEN_PKG ?= $(AI_MODEL_SMOKE_DIR)/soc_ai_model_golden_pkg.sv
+AI_MODEL_INPUT_MEMH ?= $(AI_MODEL_SMOKE_DIR)/smoke_input_vector.memh
 VERILATOR ?= verilator
 VERILATOR_FLAGS ?= --binary --timing -Wno-fatal -Wno-TIMESCALEMOD -Wno-BLKANDNBLK -Wno-UNOPTFLAT -Wno-COMBDLY -Wno-WIDTHEXPAND -Wno-WIDTHTRUNC -Wno-CASEINCOMPLETE -Wno-DECLFILENAME -Wno-UNUSEDSIGNAL -Wno-UNUSEDPARAM -Wno-BLKSEQ
 
@@ -197,12 +202,41 @@ ai-accel-smoke: $(BUILD_DIR)
 	soc_map_pkg.sv soc_ai_tinyconv_accel.sv tb_soc_ai_tinyconv_accel.sv
 	$(RUN) $(BUILD_DIR)/tb_soc_ai_tinyconv_accel.vvp
 
+.PHONY: ai-accel-model-smoke
+ai-accel-model-smoke: ai-model-tool-smoke
+	$(SIM) $(SIMFLAGS) -DSOC_AI_USE_MODEL_PKG -s tb_soc_ai_tinyconv_accel_model \
+	-o $(BUILD_DIR)/tb_soc_ai_tinyconv_accel_model.vvp \
+	soc_map_pkg.sv $(AI_MODEL_PKG) $(AI_MODEL_GOLDEN_PKG) \
+	soc_ai_tinyconv_accel.sv tb_soc_ai_tinyconv_accel_model.sv
+	$(RUN) $(BUILD_DIR)/tb_soc_ai_tinyconv_accel_model.vvp +input_memh=$(AI_MODEL_INPUT_MEMH)
+
+.PHONY: ai-island-e2e-smoke
+ai-island-e2e-smoke: ai-model-tool-smoke
+	$(SIM) $(SIMFLAGS) -DSOC_AI_USE_MODEL_PKG -s tb_soc_ai_island_e2e \
+	-o $(BUILD_DIR)/tb_soc_ai_island_e2e.vvp \
+	soc_map_pkg.sv $(AI_MODEL_PKG) $(AI_MODEL_GOLDEN_PKG) \
+	soc_mem_sp.sv soc_ai_mem.sv soc_ai_csr.sv soc_ai_tinyconv_accel.sv \
+	tb_soc_ai_island_e2e.sv
+	$(RUN) $(BUILD_DIR)/tb_soc_ai_island_e2e.vvp
+
+.PHONY: ai-uart-to-accel-e2e-smoke
+ai-uart-to-accel-e2e-smoke: ai-model-tool-smoke
+	$(SIM) $(SIMFLAGS) -DSOC_AI_USE_MODEL_PKG -DSOC_AI_E2E_USE_UART \
+	-I third_party/uart/rtl -s tb_soc_ai_island_e2e \
+	-o $(BUILD_DIR)/tb_soc_ai_uart_to_accel_e2e.vvp \
+	soc_map_pkg.sv $(AI_MODEL_PKG) $(AI_MODEL_GOLDEN_PKG) \
+	soc_mem_sp.sv soc_ai_mem.sv soc_ai_csr.sv \
+	third_party/uart/rtl/uart/uart_rx.v soc_ai_uart_loader.sv \
+	soc_ai_tinyconv_accel.sv tb_soc_ai_island_e2e.sv
+	$(RUN) $(BUILD_DIR)/tb_soc_ai_uart_to_accel_e2e.vvp
+
 .PHONY: ai-model-tool-smoke
 ai-model-tool-smoke: $(BUILD_DIR)
 	$(AI_PYTHON) tools/ai/export_tinyconv_assets.py \
 		--self-test \
-		--out-dir $(BUILD_DIR)/ai_model_tool_smoke \
-		--sv-out $(BUILD_DIR)/ai_model_tool_smoke/soc_ai_model_pkg.sv
+		--out-dir $(AI_MODEL_SMOKE_DIR) \
+		--sv-out $(AI_MODEL_PKG) \
+		--golden-sv-out $(AI_MODEL_FULL_GOLDEN_PKG)
 
 .PHONY: ai-model-tflite-smoke
 ai-model-tflite-smoke: $(BUILD_DIR)

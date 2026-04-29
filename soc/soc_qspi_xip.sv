@@ -9,7 +9,7 @@ module soc_qspi_xip #(
     parameter int unsigned RDDELAY = 1,
     parameter int unsigned NDUMMY = 6,
     parameter bit          SIM_XIP_ENABLE = 1'b0,
-    parameter string       SIM_XIP_INIT_FILE = "",
+    parameter              SIM_XIP_INIT_FILE = "",
     parameter int unsigned SIM_XIP_DEPTH_WORDS = 256
 ) (
     input  logic        clk_i,

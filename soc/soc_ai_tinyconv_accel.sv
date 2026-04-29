@@ -35,11 +35,16 @@ module soc_ai_tinyconv_accel #(
     input  logic [31:0] mem_rdata_i
 );
 
+`ifdef SOC_AI_USE_MODEL_PKG
+  import soc_ai_model_pkg::*;
+`endif
+
   typedef enum logic [3:0] {
     ST_IDLE,
     ST_KERNEL_REQ,
     ST_KERNEL_WAIT,
     ST_FEATURE_DONE,
+    ST_FC_REQUANT,
     ST_ARGMAX,
     ST_WRITE_CLASS,
     ST_WRITE_SCORE0,
@@ -72,6 +77,102 @@ module soc_ai_tinyconv_accel #(
   logic done_q;
   logic busy_q;
 
+  function automatic int depthwise_weight_index(
+      input int ch,
+      input int kh,
+      input int kw
+  );
+    begin
+`ifdef SOC_AI_USE_MODEL_PKG
+      return ((kh * soc_ai_model_pkg::AI_K_W) + kw) * soc_ai_model_pkg::AI_CHANNELS + ch;
+`else
+      return ((kh * K_W) + kw) * CHANNELS + ch;
+`endif
+    end
+  endfunction
+
+  function automatic int feature_index(
+      input int oh,
+      input int ow,
+      input int ch
+  );
+    begin
+`ifdef SOC_AI_USE_MODEL_PKG
+      return ((oh * soc_ai_model_pkg::AI_OUT_W) + ow) * soc_ai_model_pkg::AI_CHANNELS + ch;
+`else
+      return ((oh * OUT_W) + ow) * CHANNELS + ch;
+`endif
+    end
+  endfunction
+
+  function automatic int fc_weight_index(
+      input int cls,
+      input int oh,
+      input int ow,
+      input int ch
+  );
+    begin
+`ifdef SOC_AI_USE_MODEL_PKG
+      return (cls * soc_ai_model_pkg::AI_OUT_H * soc_ai_model_pkg::AI_OUT_W *
+              soc_ai_model_pkg::AI_CHANNELS) + feature_index(oh, ow, ch);
+`else
+      return (cls * OUT_H * OUT_W * CHANNELS) + feature_index(oh, ow, ch);
+`endif
+    end
+  endfunction
+
+  function automatic signed [31:0] input_zero_point();
+    begin
+`ifdef SOC_AI_USE_MODEL_PKG
+      return soc_ai_model_pkg::AI_INPUT_ZERO_POINT;
+`else
+      return 32'sd0;
+`endif
+    end
+  endfunction
+
+  function automatic signed [31:0] depthwise_output_zero_point();
+    begin
+`ifdef SOC_AI_USE_MODEL_PKG
+      return soc_ai_model_pkg::AI_DW_OUTPUT_ZERO_POINT;
+`else
+      return 32'sd0;
+`endif
+    end
+  endfunction
+
+  function automatic signed [31:0] output_zero_point();
+    begin
+`ifdef SOC_AI_USE_MODEL_PKG
+      return soc_ai_model_pkg::AI_OUTPUT_ZERO_POINT;
+`else
+      return 32'sd0;
+`endif
+    end
+  endfunction
+
+  function automatic int requant_shift();
+    begin
+`ifdef SOC_AI_USE_MODEL_PKG
+      return soc_ai_model_pkg::AI_REQUANT_SHIFT;
+`else
+      return 0;
+`endif
+    end
+  endfunction
+
+  function automatic signed [31:0] depthwise_bias(
+      input int ch
+  );
+    begin
+`ifdef SOC_AI_USE_MODEL_PKG
+      return soc_ai_model_pkg::ai_dw_bias(ch);
+`else
+      return 32'sd0;
+`endif
+    end
+  endfunction
+
   function automatic signed [7:0] depthwise_weight(
       input int ch,
       input int kh,
@@ -79,8 +180,53 @@ module soc_ai_tinyconv_accel #(
   );
     int v;
     begin
+`ifdef SOC_AI_USE_MODEL_PKG
+      return soc_ai_model_pkg::ai_dw_weight(depthwise_weight_index(ch, kh, kw));
+`else
       v = (ch * 3 + kh * 5 + kw * 7) % 5;
       return v - 2;
+`endif
+    end
+  endfunction
+
+  function automatic signed [31:0] depthwise_weight_zero_point(
+      input int ch
+  );
+    begin
+`ifdef SOC_AI_USE_MODEL_PKG
+      return soc_ai_model_pkg::ai_dw_weight_zero_point(ch);
+`else
+      return 32'sd0;
+`endif
+    end
+  endfunction
+
+  function automatic signed [31:0] depthwise_requant_multiplier(
+      input int ch
+  );
+    begin
+`ifdef SOC_AI_USE_MODEL_PKG
+      return soc_ai_model_pkg::ai_dw_requant_multiplier(ch);
+`else
+      return 32'sd1;
+`endif
+    end
+  endfunction
+
+  function automatic signed [31:0] fc_bias(
+      input int cls
+  );
+    begin
+`ifdef SOC_AI_USE_MODEL_PKG
+      return soc_ai_model_pkg::ai_fc_bias(cls);
+`else
+      unique case (cls)
+        0: fc_bias = 32'sd13;
+        1: fc_bias = -32'sd7;
+        2: fc_bias = 32'sd3;
+        default: fc_bias = -32'sd11;
+      endcase
+`endif
     end
   endfunction
 
@@ -92,8 +238,117 @@ module soc_ai_tinyconv_accel #(
   );
     int v;
     begin
+`ifdef SOC_AI_USE_MODEL_PKG
+      return soc_ai_model_pkg::ai_fc_weight(fc_weight_index(cls, oh, ow, ch));
+`else
       v = (cls * 11 + oh * 3 + ow * 5 + ch * 7) % 7;
       return v - 3;
+`endif
+    end
+  endfunction
+
+  function automatic signed [31:0] fc_weight_zero_point(
+      input int cls
+  );
+    begin
+`ifdef SOC_AI_USE_MODEL_PKG
+      return soc_ai_model_pkg::ai_fc_weight_zero_point(cls);
+`else
+      return 32'sd0;
+`endif
+    end
+  endfunction
+
+  function automatic signed [31:0] fc_requant_multiplier(
+      input int cls
+  );
+    begin
+`ifdef SOC_AI_USE_MODEL_PKG
+      return soc_ai_model_pkg::ai_fc_requant_multiplier(cls);
+`else
+      return 32'sd1;
+`endif
+    end
+  endfunction
+
+  function automatic signed [31:0] rounded_shift(
+      input signed [63:0] value,
+      input int shift
+  );
+    logic signed [63:0] magnitude;
+    logic signed [63:0] rounded;
+    begin
+      if (shift == 0) begin
+        return value[31:0];
+      end
+
+      if (value >= 0) begin
+        rounded = (value + (64'sd1 <<< (shift - 1))) >>> shift;
+        return rounded[31:0];
+      end
+
+      magnitude = -value;
+      rounded = (magnitude + (64'sd1 <<< (shift - 1))) >>> shift;
+      return -rounded[31:0];
+    end
+  endfunction
+
+  function automatic signed [31:0] requantize_fixed(
+      input signed [31:0] value,
+      input signed [31:0] multiplier,
+      input int shift,
+      input signed [31:0] zero_point
+  );
+    logic signed [63:0] product;
+    begin
+      product = value * multiplier;
+      return rounded_shift(product, shift) + zero_point;
+    end
+  endfunction
+
+  function automatic signed [31:0] clamp_int8(input signed [31:0] value);
+    begin
+      if (value > 32'sd127) begin
+        return 32'sd127;
+      end
+      if (value < -32'sd128) begin
+        return -32'sd128;
+      end
+      return value;
+    end
+  endfunction
+
+  function automatic signed [31:0] depthwise_activation(input signed [31:0] value, input int ch);
+    logic signed [31:0] quantized;
+    begin
+`ifdef SOC_AI_USE_MODEL_PKG
+      quantized = requantize_fixed(value,
+                                   depthwise_requant_multiplier(ch),
+                                   requant_shift(),
+                                   depthwise_output_zero_point());
+      if (quantized < depthwise_output_zero_point()) begin
+        quantized = depthwise_output_zero_point();
+      end
+      return clamp_int8(quantized);
+`else
+      return relu_shift(value);
+`endif
+    end
+  endfunction
+
+  function automatic signed [31:0] fc_output_score(
+      input int cls,
+      input signed [31:0] value
+  );
+    begin
+`ifdef SOC_AI_USE_MODEL_PKG
+      return clamp_int8(requantize_fixed(value,
+                                         fc_requant_multiplier(cls),
+                                         requant_shift(),
+                                         output_zero_point()));
+`else
+      return value;
+`endif
     end
   endfunction
 
@@ -190,20 +445,20 @@ module soc_ai_tinyconv_accel #(
         if (ow_q == OUT_W - 1) begin
           ow_q <= 0;
           if (oh_q == OUT_H - 1) begin
-            state_q <= ST_ARGMAX;
+            state_q <= ST_FC_REQUANT;
           end else begin
             oh_q <= oh_q + 1;
-            conv_acc_q <= 32'sd0;
+            conv_acc_q <= depthwise_bias(0);
             state_q <= ST_KERNEL_REQ;
           end
         end else begin
           ow_q <= ow_q + 1;
-          conv_acc_q <= 32'sd0;
+          conv_acc_q <= depthwise_bias(0);
           state_q <= ST_KERNEL_REQ;
         end
       end else begin
         ch_q <= ch_q + 1;
-        conv_acc_q <= 32'sd0;
+        conv_acc_q <= depthwise_bias(ch_q + 1);
         state_q <= ST_KERNEL_REQ;
       end
     end
@@ -248,11 +503,11 @@ module soc_ai_tinyconv_accel #(
             ch_q           <= 0;
             kh_q           <= 0;
             kw_q           <= 0;
-            conv_acc_q     <= 32'sd0;
-            score0_q       <= 32'sd13;
-            score1_q       <= -32'sd7;
-            score2_q       <= 32'sd3;
-            score3_q       <= -32'sd11;
+            conv_acc_q     <= depthwise_bias(0);
+            score0_q       <= fc_bias(0);
+            score1_q       <= fc_bias(1);
+            score2_q       <= fc_bias(2);
+            score3_q       <= fc_bias(3);
             cycle_count_q  <= 32'h0;
             result_class_q <= 2'h0;
             state_q        <= ST_KERNEL_REQ;
@@ -271,20 +526,39 @@ module soc_ai_tinyconv_accel #(
 
         ST_KERNEL_WAIT: begin
           if (mem_rvalid_i) begin
-            sample_value = byte_to_sample(pick_byte(mem_rdata_i, sample_lane_q));
-            next_conv    = conv_acc_q + (sample_value * depthwise_weight(ch_q, kh_q, kw_q));
+            sample_value = byte_to_sample(pick_byte(mem_rdata_i, sample_lane_q)) - input_zero_point();
+            next_conv    = conv_acc_q +
+                           (sample_value *
+                            (depthwise_weight(ch_q, kh_q, kw_q) -
+                             depthwise_weight_zero_point(ch_q)));
             conv_acc_q   <= next_conv;
             advance_kernel();
           end
         end
 
         ST_FEATURE_DONE: begin
-          relu_value = relu_shift(conv_acc_q);
-          score0_q <= score0_q + (relu_value * fc_weight(0, oh_q, ow_q, ch_q));
-          score1_q <= score1_q + (relu_value * fc_weight(1, oh_q, ow_q, ch_q));
-          score2_q <= score2_q + (relu_value * fc_weight(2, oh_q, ow_q, ch_q));
-          score3_q <= score3_q + (relu_value * fc_weight(3, oh_q, ow_q, ch_q));
+          relu_value = depthwise_activation(conv_acc_q, ch_q);
+          score0_q <= score0_q + ((relu_value - depthwise_output_zero_point()) *
+                                   (fc_weight(0, oh_q, ow_q, ch_q) -
+                                    fc_weight_zero_point(0)));
+          score1_q <= score1_q + ((relu_value - depthwise_output_zero_point()) *
+                                   (fc_weight(1, oh_q, ow_q, ch_q) -
+                                    fc_weight_zero_point(1)));
+          score2_q <= score2_q + ((relu_value - depthwise_output_zero_point()) *
+                                   (fc_weight(2, oh_q, ow_q, ch_q) -
+                                    fc_weight_zero_point(2)));
+          score3_q <= score3_q + ((relu_value - depthwise_output_zero_point()) *
+                                   (fc_weight(3, oh_q, ow_q, ch_q) -
+                                    fc_weight_zero_point(3)));
           advance_feature();
+        end
+
+        ST_FC_REQUANT: begin
+          score0_q <= fc_output_score(0, score0_q);
+          score1_q <= fc_output_score(1, score1_q);
+          score2_q <= fc_output_score(2, score2_q);
+          score3_q <= fc_output_score(3, score3_q);
+          state_q <= ST_ARGMAX;
         end
 
         ST_ARGMAX: begin

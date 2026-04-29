@@ -137,6 +137,7 @@ Buradan bakarak su ana mimariyi gorebilirsin:
 - [TEAM_GUIDE.md](./TEAM_GUIDE.md#L1)
 - [soc/ARCHITECTURE_DECISIONS_V0.md](./soc/ARCHITECTURE_DECISIONS_V0.md#L1)
 - [soc/MEMORY_MAP_V0.md](./soc/MEMORY_MAP_V0.md#L1)
+- [soc/AI_RUNTIME_CONTRACT.md](./soc/AI_RUNTIME_CONTRACT.md#L1)
 - [soc/AI_ACCELERATOR_STATUS.md](./soc/AI_ACCELERATOR_STATUS.md#L1)
 - [soc/QSPI_CFG_REGMAP.md](./soc/QSPI_CFG_REGMAP.md#L1)
 - [soc/VIVADO_TEST_GUIDE.md](./soc/VIVADO_TEST_GUIDE.md#L1)
@@ -175,6 +176,7 @@ Panel dosyalari:
 - `vvp`
 - `verilator`
 - `perl`
+- AI model tooling icin `python3` + `numpy`
 - Vivado smoke test icin `vivado`
 
 ### Ana Regresyon
@@ -205,6 +207,10 @@ make -C soc soc-timer-smoke
 make -C soc soc-i2c-smoke
 make -C soc qspi-cfg-smoke
 make -C soc qspi-xip-smoke
+make -C soc ai-model-tool-smoke
+make -C soc ai-accel-model-smoke
+make -C soc ai-island-e2e-smoke
+make -C soc ai-uart-to-accel-e2e-smoke
 ```
 
 Build artiklari:

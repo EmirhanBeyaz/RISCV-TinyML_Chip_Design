@@ -251,7 +251,7 @@ module soc_ai_csr #(
         status_word[3] = uart_active_i;
         status_word[4] = uart_done_i;
         status_word[5] = uart_error_i;
-        status_word[8] = 1'b1;  // Synthetic built-in weights are present.
+        status_word[8] = 1'b1;  // Accelerator weights/model path is present.
         status_word[9] = 1'b1;  // AI_MEM is integrated.
 
         rresp_q <= 2'b00;
