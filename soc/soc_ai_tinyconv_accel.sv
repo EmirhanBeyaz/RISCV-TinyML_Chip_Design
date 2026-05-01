@@ -39,12 +39,18 @@ module soc_ai_tinyconv_accel #(
   import soc_ai_model_pkg::*;
 `endif
 
-  typedef enum logic [3:0] {
+  typedef enum logic [4:0] {
     ST_IDLE,
     ST_KERNEL_REQ,
     ST_KERNEL_WAIT,
-    ST_FEATURE_DONE,
-    ST_FC_REQUANT,
+    ST_KERNEL_MAC,
+    ST_ACT_MUL,
+    ST_ACT_SHIFT,
+    ST_FC_PREP,
+    ST_FC_MUL,
+    ST_FC_ACCUM,
+    ST_FC_REQUANT_MUL,
+    ST_FC_REQUANT_SHIFT,
     ST_ARGMAX,
     ST_WRITE_CLASS,
     ST_WRITE_SCORE0,
@@ -67,6 +73,15 @@ module soc_ai_tinyconv_accel #(
   logic [1:0] sample_lane_now;
   logic       sample_valid_now;
   logic [1:0] sample_lane_q;
+  logic signed [15:0] sample_value_q;
+  logic signed [15:0] dw_weight_delta_q;
+  logic signed [31:0] activation_q;
+  logic signed [15:0] fc_activation_delta_q;
+  logic signed [15:0] fc_weight_delta_q;
+  logic signed [31:0] fc_mac_delta_q;
+  logic signed [63:0] requant_product_q;
+  logic [1:0] fc_class_q;
+  logic [1:0] rq_class_q;
   logic signed [31:0] conv_acc_q;
   logic signed [31:0] score0_q;
   logic signed [31:0] score1_q;
@@ -178,13 +193,20 @@ module soc_ai_tinyconv_accel #(
       input int kh,
       input int kw
   );
-    int v;
     begin
 `ifdef SOC_AI_USE_MODEL_PKG
       return soc_ai_model_pkg::ai_dw_weight(depthwise_weight_index(ch, kh, kw));
 `else
-      v = (ch * 3 + kh * 5 + kw * 7) % 5;
-      return v - 2;
+      unique case ({ch[0], kh[0], kw[0]})
+        3'b000: depthwise_weight = -8'sd2;
+        3'b001: depthwise_weight = -8'sd1;
+        3'b010: depthwise_weight =  8'sd0;
+        3'b011: depthwise_weight =  8'sd1;
+        3'b100: depthwise_weight =  8'sd2;
+        3'b101: depthwise_weight = -8'sd2;
+        3'b110: depthwise_weight = -8'sd1;
+        default: depthwise_weight = 8'sd1;
+      endcase
 `endif
     end
   endfunction
@@ -236,13 +258,28 @@ module soc_ai_tinyconv_accel #(
       input int ow,
       input int ch
   );
-    int v;
     begin
 `ifdef SOC_AI_USE_MODEL_PKG
       return soc_ai_model_pkg::ai_fc_weight(fc_weight_index(cls, oh, ow, ch));
 `else
-      v = (cls * 11 + oh * 3 + ow * 5 + ch * 7) % 7;
-      return v - 3;
+      unique case ({cls[0], oh[0], ow[0], ch[0]})
+        4'b0000: fc_weight = -8'sd3;
+        4'b0001: fc_weight = -8'sd2;
+        4'b0010: fc_weight = -8'sd1;
+        4'b0011: fc_weight =  8'sd0;
+        4'b0100: fc_weight =  8'sd1;
+        4'b0101: fc_weight =  8'sd2;
+        4'b0110: fc_weight =  8'sd3;
+        4'b0111: fc_weight = -8'sd1;
+        4'b1000: fc_weight =  8'sd2;
+        4'b1001: fc_weight =  8'sd1;
+        4'b1010: fc_weight =  8'sd0;
+        4'b1011: fc_weight = -8'sd1;
+        4'b1100: fc_weight = -8'sd2;
+        4'b1101: fc_weight = -8'sd3;
+        4'b1110: fc_weight =  8'sd1;
+        default: fc_weight = 8'sd3;
+      endcase
 `endif
     end
   endfunction
@@ -426,7 +463,7 @@ module soc_ai_tinyconv_accel #(
         kw_q <= 0;
         if (kh_q == K_H - 1) begin
           kh_q   <= 0;
-          state_q <= ST_FEATURE_DONE;
+          state_q <= ST_ACT_MUL;
         end else begin
           kh_q <= kh_q + 1;
           state_q <= ST_KERNEL_REQ;
@@ -445,7 +482,12 @@ module soc_ai_tinyconv_accel #(
         if (ow_q == OUT_W - 1) begin
           ow_q <= 0;
           if (oh_q == OUT_H - 1) begin
-            state_q <= ST_FC_REQUANT;
+`ifdef SOC_AI_USE_MODEL_PKG
+            rq_class_q <= 2'd0;
+            state_q <= ST_FC_REQUANT_MUL;
+`else
+            state_q <= ST_ARGMAX;
+`endif
           end else begin
             oh_q <= oh_q + 1;
             conv_acc_q <= depthwise_bias(0);
@@ -473,6 +515,15 @@ module soc_ai_tinyconv_accel #(
       kh_q          <= 0;
       kw_q          <= 0;
       sample_lane_q <= 2'b00;
+      sample_value_q <= 16'sd0;
+      dw_weight_delta_q <= 16'sd0;
+      activation_q  <= 32'sd0;
+      fc_activation_delta_q <= 16'sd0;
+      fc_weight_delta_q <= 16'sd0;
+      fc_mac_delta_q <= 32'sd0;
+      requant_product_q <= 64'sd0;
+      fc_class_q    <= 2'h0;
+      rq_class_q    <= 2'h0;
       conv_acc_q    <= 32'sd0;
       score0_q      <= 32'sd0;
       score1_q      <= 32'sd0;
@@ -483,10 +534,13 @@ module soc_ai_tinyconv_accel #(
       done_q        <= 1'b0;
       busy_q        <= 1'b0;
     end else begin
-      logic signed [31:0] relu_value;
       logic signed [31:0] sample_value;
-      logic signed [31:0] next_conv;
+      logic signed [31:0] weight_delta;
       logic signed [31:0] best_score;
+      logic signed [31:0] requant_value;
+      logic signed [31:0] selected_score;
+      logic signed [31:0] fc_activation_delta_wide;
+      logic signed [31:0] fc_weight_delta_wide;
 
       done_q <= 1'b0;
       if (busy_q) begin
@@ -503,6 +557,15 @@ module soc_ai_tinyconv_accel #(
             ch_q           <= 0;
             kh_q           <= 0;
             kw_q           <= 0;
+            sample_value_q  <= 16'sd0;
+            dw_weight_delta_q <= 16'sd0;
+            activation_q    <= 32'sd0;
+            fc_activation_delta_q <= 16'sd0;
+            fc_weight_delta_q <= 16'sd0;
+            fc_mac_delta_q <= 32'sd0;
+            requant_product_q <= 64'sd0;
+            fc_class_q      <= 2'h0;
+            rq_class_q      <= 2'h0;
             conv_acc_q     <= depthwise_bias(0);
             score0_q       <= fc_bias(0);
             score1_q       <= fc_bias(1);
@@ -527,38 +590,100 @@ module soc_ai_tinyconv_accel #(
         ST_KERNEL_WAIT: begin
           if (mem_rvalid_i) begin
             sample_value = byte_to_sample(pick_byte(mem_rdata_i, sample_lane_q)) - input_zero_point();
-            next_conv    = conv_acc_q +
-                           (sample_value *
-                            (depthwise_weight(ch_q, kh_q, kw_q) -
-                             depthwise_weight_zero_point(ch_q)));
-            conv_acc_q   <= next_conv;
-            advance_kernel();
+            weight_delta = depthwise_weight(ch_q, kh_q, kw_q) -
+                           depthwise_weight_zero_point(ch_q);
+            sample_value_q <= sample_value[15:0];
+            dw_weight_delta_q <= weight_delta[15:0];
+            state_q <= ST_KERNEL_MAC;
           end
         end
 
-        ST_FEATURE_DONE: begin
-          relu_value = depthwise_activation(conv_acc_q, ch_q);
-          score0_q <= score0_q + ((relu_value - depthwise_output_zero_point()) *
-                                   (fc_weight(0, oh_q, ow_q, ch_q) -
-                                    fc_weight_zero_point(0)));
-          score1_q <= score1_q + ((relu_value - depthwise_output_zero_point()) *
-                                   (fc_weight(1, oh_q, ow_q, ch_q) -
-                                    fc_weight_zero_point(1)));
-          score2_q <= score2_q + ((relu_value - depthwise_output_zero_point()) *
-                                   (fc_weight(2, oh_q, ow_q, ch_q) -
-                                    fc_weight_zero_point(2)));
-          score3_q <= score3_q + ((relu_value - depthwise_output_zero_point()) *
-                                   (fc_weight(3, oh_q, ow_q, ch_q) -
-                                    fc_weight_zero_point(3)));
-          advance_feature();
+        ST_KERNEL_MAC: begin
+          conv_acc_q <= conv_acc_q + (sample_value_q * dw_weight_delta_q);
+          advance_kernel();
         end
 
-        ST_FC_REQUANT: begin
-          score0_q <= fc_output_score(0, score0_q);
-          score1_q <= fc_output_score(1, score1_q);
-          score2_q <= fc_output_score(2, score2_q);
-          score3_q <= fc_output_score(3, score3_q);
-          state_q <= ST_ARGMAX;
+        ST_ACT_MUL: begin
+`ifdef SOC_AI_USE_MODEL_PKG
+          requant_product_q <= conv_acc_q * depthwise_requant_multiplier(ch_q);
+          state_q <= ST_ACT_SHIFT;
+`else
+          activation_q <= relu_shift(conv_acc_q);
+          fc_class_q <= 2'd0;
+          state_q <= ST_FC_PREP;
+`endif
+        end
+
+        ST_ACT_SHIFT: begin
+          requant_value = rounded_shift(requant_product_q, requant_shift()) +
+                          depthwise_output_zero_point();
+          if (requant_value < depthwise_output_zero_point()) begin
+            requant_value = depthwise_output_zero_point();
+          end
+          activation_q <= clamp_int8(requant_value);
+          fc_class_q <= 2'd0;
+          state_q <= ST_FC_PREP;
+        end
+
+        ST_FC_PREP: begin
+          fc_activation_delta_wide = activation_q - depthwise_output_zero_point();
+          fc_weight_delta_wide = fc_weight(fc_class_q, oh_q, ow_q, ch_q) -
+                                 fc_weight_zero_point(fc_class_q);
+          fc_activation_delta_q <= fc_activation_delta_wide[15:0];
+          fc_weight_delta_q <= fc_weight_delta_wide[15:0];
+          state_q <= ST_FC_MUL;
+        end
+
+        ST_FC_MUL: begin
+          fc_mac_delta_q <= fc_activation_delta_q * fc_weight_delta_q;
+          state_q <= ST_FC_ACCUM;
+        end
+
+        ST_FC_ACCUM: begin
+          unique case (fc_class_q)
+            2'd0: score0_q <= score0_q + fc_mac_delta_q;
+            2'd1: score1_q <= score1_q + fc_mac_delta_q;
+            2'd2: score2_q <= score2_q + fc_mac_delta_q;
+            default: score3_q <= score3_q + fc_mac_delta_q;
+          endcase
+
+          if (fc_class_q == 2'd3) begin
+            fc_class_q <= 2'd0;
+            advance_feature();
+          end else begin
+            fc_class_q <= fc_class_q + 1'b1;
+            state_q <= ST_FC_PREP;
+          end
+        end
+
+        ST_FC_REQUANT_MUL: begin
+          unique case (rq_class_q)
+            2'd0: selected_score = score0_q;
+            2'd1: selected_score = score1_q;
+            2'd2: selected_score = score2_q;
+            default: selected_score = score3_q;
+          endcase
+          requant_product_q <= selected_score * fc_requant_multiplier(rq_class_q);
+          state_q <= ST_FC_REQUANT_SHIFT;
+        end
+
+        ST_FC_REQUANT_SHIFT: begin
+          requant_value = clamp_int8(rounded_shift(requant_product_q, requant_shift()) +
+                                     output_zero_point());
+          unique case (rq_class_q)
+            2'd0: score0_q <= requant_value;
+            2'd1: score1_q <= requant_value;
+            2'd2: score2_q <= requant_value;
+            default: score3_q <= requant_value;
+          endcase
+
+          if (rq_class_q == 2'd3) begin
+            rq_class_q <= 2'd0;
+            state_q <= ST_ARGMAX;
+          end else begin
+            rq_class_q <= rq_class_q + 1'b1;
+            state_q <= ST_FC_REQUANT_MUL;
+          end
         end
 
         ST_ARGMAX: begin

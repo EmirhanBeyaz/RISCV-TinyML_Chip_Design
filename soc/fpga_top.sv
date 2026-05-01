@@ -125,7 +125,7 @@ module fpga_top #(
       .gpio_out_o          (gpio_out),
       .gpio_dir_o          (gpio_dir),
       .gpio_irq_o          (gpio_irq),
-      .timer_ref_clk_i     (clk_i),
+      .timer_ref_clk_i     (1'b0),
       .timer_stoptimer_i   (1'b0),
       .timer_event_lo_i    (1'b0),
       .timer_event_hi_i    (1'b0),
