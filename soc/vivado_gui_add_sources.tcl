@@ -11,11 +11,13 @@ set core_rtl   [file normalize [file join $core_dir rtl]]
 set manifest   [file normalize [file join $core_dir cv32e40p_manifest.flist]]
 set ai_model_pkg [file normalize [file join $soc_dir build ai_model_tflm_micro_speech soc_ai_model_pkg.sv]]
 set timing_xdc [file normalize [file join $soc_dir fpga_top_timing.xdc]]
+set arty_xdc [file normalize [file join $soc_dir fpga_top_arty_a7.xdc]]
 
-# Default GUI top for FPGA-oriented Vivado checks.
-# Change this back to "cv32e40p_axi_soc" only if you explicitly want the raw
-# SoC top instead of the board-style wrapper.
-set target_top fpga_top
+# Default GUI top for Arty A7 board implementation. Override target_top before
+# sourcing this script if you need the generic fpga_top or raw SoC top.
+if {![info exists target_top]} {
+  set target_top fpga_top_arty_a7
+}
 
 # Optional official Micro Speech package mode.
 # Usage in Tcl Console before sourcing this script:
@@ -95,6 +97,7 @@ set soc_files [list \
   [file join $soc_dir soc_apb_timer.sv] \
   [file join $soc_dir axi_lite_ram.sv] \
   [file join $soc_dir fpga_top.sv] \
+  [file join $soc_dir fpga_top_arty_a7.sv] \
   [file join $soc_dir third_party uart rtl uart uart_tx.v] \
   [file join $soc_dir third_party uart rtl uart uart_rx.v] \
   [file join $soc_dir third_party peripherals rtl apb_gpio rtl apb_gpio.sv] \
@@ -139,15 +142,20 @@ if {[llength $files_to_add] > 0} {
   add_files -fileset sources_1 -norecurse $files_to_add
 }
 
-if {[file exists $timing_xdc]} {
+set constraint_file $timing_xdc
+if {$target_top eq "fpga_top_arty_a7"} {
+  set constraint_file $arty_xdc
+}
+
+if {[file exists $constraint_file]} {
   set existing_xdc [list]
   foreach f [get_files -of_objects [get_filesets constrs_1]] {
     if {$f ne ""} {
       lappend existing_xdc [file normalize $f]
     }
   }
-  if {[lsearch -exact [lsort -unique $existing_xdc] $timing_xdc] < 0} {
-    add_files -fileset constrs_1 -norecurse $timing_xdc
+  if {[lsearch -exact [lsort -unique $existing_xdc] $constraint_file] < 0} {
+    add_files -fileset constrs_1 -norecurse $constraint_file
   }
 }
 
@@ -165,4 +173,4 @@ puts "AI model package: $use_ai_model_pkg"
 puts "RTL file count  : [llength $all_files]"
 puts "New files added : [llength $files_to_add]"
 puts "Include dirs    : [llength $include_dirs]"
-puts "Timing XDC      : $timing_xdc"
+puts "Constraint XDC  : $constraint_file"

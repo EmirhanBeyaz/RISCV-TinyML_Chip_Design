@@ -11,6 +11,7 @@ vivado.jou
 vivado.log
 vivado_*.backup.jou
 vivado_*.backup.log
+clockInfo.txt
 
 soc/vivado.jou
 soc/vivado.log
