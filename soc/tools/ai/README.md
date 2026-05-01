@@ -59,6 +59,139 @@ After installing TensorFlow, the `.tflite` extraction path can be tested with a 
 make AI_PYTHON=../.venv-ai/bin/python ai-model-tflite-smoke
 ```
 
+## Official TFLite Micro Micro Speech Flow
+
+The project does not vendor the full TensorFlow Lite Micro repository. Instead,
+it can fetch the small official Micro Speech reference assets into `build/`:
+
+```sh
+make AI_PYTHON=../.venv-ai/bin/python ai-model-tflm-fetch
+```
+
+Then export the official quantized Micro Speech model into the RTL package
+format used by `soc_ai_tinyconv_accel`:
+
+```sh
+make AI_PYTHON=../.venv-ai/bin/python ai-model-tflm-export
+```
+
+Compile and run the accelerator datapath with the official model package using
+the reduced fast smoke shape:
+
+```sh
+make AI_PYTHON=../.venv-ai/bin/python ai-accel-tflm-smoke
+```
+
+Check the same official model package through the integrated AI island path
+(`AI_MEM -> AI_CSR -> accelerator -> IRQ/result`):
+
+```sh
+make AI_PYTHON=../.venv-ai/bin/python ai-island-tflm-smoke
+```
+
+Or run the full official-model fetch/export/accelerator smoke chain:
+
+```sh
+make AI_PYTHON=../.venv-ai/bin/python ai-tflm-smoke
+```
+
+The full `49x40` accelerator datapath can be checked separately. This is kept
+out of daily `full` because it is intentionally slower:
+
+```sh
+make AI_PYTHON=../.venv-ai/bin/python ai-accel-tflm-full-smoke
+```
+
+Outputs are written under:
+
+```text
+build/tflm_micro_speech/
+build/ai_model_tflm_micro_speech/
+```
+
+The official model still expects a precomputed `49x40` int8 feature tensor.
+Raw audio preprocessing is intentionally outside the V1 RTL accelerator.
+
+## Feature Payloads
+
+The accelerator input is always a `49x40 = 1960 byte` int8 tensor. For demos
+and UART loading, prepare this payload explicitly:
+
+```sh
+make AI_PYTHON=../.venv-ai/bin/python ai-feature-payload-demo
+```
+
+This writes:
+
+```text
+build/ai_feature_payload/demo_silence_1960_int8.npy
+build/ai_feature_payload/demo_silence_1960_int8.memh
+build/ai_feature_payload/demo_silence_1960_int8.bin
+```
+
+- `.npy` is for Python/TFLite golden generation.
+- `.memh` is for simulation/testbench loading.
+- `.bin` is the 1960-byte UART payload for a board-side loader.
+
+The firmware packet format can be generated with:
+
+```sh
+make AI_PYTHON=../.venv-ai/bin/python ai-uart-packet-demo
+```
+
+See `soc/AI_UART_PAYLOAD_PROTOCOL.md` for the raw-loader and firmware-packet
+formats.
+
+To validate/export a real precomputed feature tensor:
+
+```sh
+../.venv-ai/bin/python tools/ai/prepare_feature_payload.py \
+  --input-npy path/to/input_1960_int8.npy \
+  --out-dir build/ai_feature_payload \
+  --name sample_yes
+```
+
+The tool also accepts `--input-memh` and `--input-bin`. It does not implement
+official WAV/audio preprocessing; it only handles the tensor format consumed by
+the RTL accelerator.
+
+To run the official Micro Speech model on the demo feature tensor and emit
+TFLite/NumPy goldens:
+
+```sh
+make AI_PYTHON=../.venv-ai/bin/python ai-model-tflm-demo-golden
+```
+
+## WAV Demo Path
+
+The official TFLM audio preprocessor model uses custom Signal Library ops such
+as `SignalWindow`; the stock desktop TensorFlow Lite interpreter cannot execute
+that model directly. Until the custom-op runtime is integrated, a lightweight
+host demo preprocessor can convert a 16 kHz mono WAV into the same `49x40`
+payload shape:
+
+```sh
+make AI_PYTHON=../.venv-ai/bin/python ai-wav-feature-demo
+```
+
+This fetches official Micro Speech WAV samples and writes:
+
+```text
+build/ai_wav_feature/yes_1000ms_1960_int8.npy
+build/ai_wav_feature/yes_1000ms_1960_int8.memh
+build/ai_wav_feature/yes_1000ms_1960_int8.bin
+```
+
+Then the official Micro Speech classifier model can be run on that demo payload:
+
+```sh
+make AI_PYTHON=../.venv-ai/bin/python ai-model-tflm-wav-demo-golden
+```
+
+This path is useful for end-to-end data movement and demo plumbing. It is not
+an accuracy sign-off path because the host preprocessor is approximate, not
+bit-exact TFLM Signal Library preprocessing.
+
 ## Real Model Flow
 
 Create a local environment from the repo root when TensorFlow is needed:

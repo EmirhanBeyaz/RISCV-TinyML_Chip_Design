@@ -17,3 +17,12 @@ Buradaki kodlar proje agacina uyarlanmis ve yerel wrapper'larla entegre edilmist
   - Konum: [qspi_xip](./qspi_xip#L1)
   - Kaynak ve lisans: [qspi_xip/SOURCE.md](./qspi_xip/SOURCE.md#L1)
   - Entegrasyon notlari: [qspi_xip/NOTES.md](./qspi_xip/NOTES.md#L1)
+
+## Referans Alinan Ancak Vendor Edilmeyenler
+
+- TensorFlow Lite Micro Micro Speech
+  - Kaynak: https://github.com/tensorflow/tflite-micro/tree/main/tensorflow/lite/micro/examples/micro_speech
+  - Kullanim: Resmi `micro_speech_quantized.tflite` modeli build asamasinda
+    indirilip RTL asset/package uretimi icin referans alinir.
+  - Not: TFLM deposu proje agacina kopyalanmaz; ayrintilar icin
+    [../TFLM_MICRO_SPEECH_REFERENCE.md](../TFLM_MICRO_SPEECH_REFERENCE.md#L1).

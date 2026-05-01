@@ -8,6 +8,19 @@ AI_MODEL_PKG ?= $(AI_MODEL_SMOKE_DIR)/soc_ai_model_pkg.sv
 AI_MODEL_GOLDEN_PKG ?= $(AI_MODEL_SMOKE_DIR)/soc_ai_model_smoke_golden_pkg.sv
 AI_MODEL_FULL_GOLDEN_PKG ?= $(AI_MODEL_SMOKE_DIR)/soc_ai_model_golden_pkg.sv
 AI_MODEL_INPUT_MEMH ?= $(AI_MODEL_SMOKE_DIR)/smoke_input_vector.memh
+TFLM_MICRO_SPEECH_DIR ?= $(BUILD_DIR)/tflm_micro_speech
+TFLM_MICRO_SPEECH_MODEL ?= $(TFLM_MICRO_SPEECH_DIR)/models/micro_speech_quantized.tflite
+TFLM_MICRO_SPEECH_OUT ?= $(BUILD_DIR)/ai_model_tflm_micro_speech
+TFLM_MICRO_SPEECH_PKG ?= $(TFLM_MICRO_SPEECH_OUT)/soc_ai_model_pkg.sv
+TFLM_MICRO_SPEECH_GOLDEN_PKG ?= $(TFLM_MICRO_SPEECH_OUT)/soc_ai_model_smoke_golden_pkg.sv
+TFLM_MICRO_SPEECH_INPUT_MEMH ?= $(TFLM_MICRO_SPEECH_OUT)/smoke_input_vector.memh
+TFLM_MICRO_SPEECH_YES_WAV ?= $(TFLM_MICRO_SPEECH_DIR)/testdata/yes_1000ms.wav
+AI_FEATURE_PAYLOAD_DIR ?= $(BUILD_DIR)/ai_feature_payload
+AI_FEATURE_PAYLOAD_NPY ?= $(AI_FEATURE_PAYLOAD_DIR)/demo_silence_1960_int8.npy
+AI_FEATURE_PAYLOAD_BIN ?= $(AI_FEATURE_PAYLOAD_DIR)/demo_silence_1960_int8.bin
+AI_UART_PACKET_DIR ?= $(BUILD_DIR)/ai_uart_packet
+AI_WAV_FEATURE_DIR ?= $(BUILD_DIR)/ai_wav_feature
+AI_WAV_FEATURE_NPY ?= $(AI_WAV_FEATURE_DIR)/yes_1000ms_1960_int8.npy
 VERILATOR ?= verilator
 VERILATOR_FLAGS ?= --binary --timing -Wno-fatal -Wno-TIMESCALEMOD -Wno-BLKANDNBLK -Wno-UNOPTFLAT -Wno-COMBDLY -Wno-WIDTHEXPAND -Wno-WIDTHTRUNC -Wno-CASEINCOMPLETE -Wno-DECLFILENAME -Wno-UNUSEDSIGNAL -Wno-UNUSEDPARAM -Wno-BLKSEQ
 
@@ -230,6 +243,11 @@ ai-uart-to-accel-e2e-smoke: ai-model-tool-smoke
 	soc_ai_tinyconv_accel.sv tb_soc_ai_island_e2e.sv
 	$(RUN) $(BUILD_DIR)/tb_soc_ai_uart_to_accel_e2e.vvp
 
+.PHONY: ai-smoke
+ai-smoke: ai-mem-smoke ai-csr-smoke ai-uart-loader-smoke ai-accel-smoke \
+	ai-model-tool-smoke ai-accel-model-smoke ai-island-e2e-smoke \
+	ai-uart-to-accel-e2e-smoke
+
 .PHONY: ai-model-tool-smoke
 ai-model-tool-smoke: $(BUILD_DIR)
 	$(AI_PYTHON) tools/ai/export_tinyconv_assets.py \
@@ -247,6 +265,94 @@ ai-model-tflite-smoke: $(BUILD_DIR)
 		--input-npy $(BUILD_DIR)/ai_model_tflite_smoke/input_1960_int8.npy \
 		--out-dir $(BUILD_DIR)/ai_model_tflite_smoke/extracted \
 		--sv-out $(BUILD_DIR)/ai_model_tflite_smoke/extracted/soc_ai_model_pkg.sv
+
+.PHONY: ai-feature-payload-demo
+ai-feature-payload-demo: $(BUILD_DIR)
+	$(AI_PYTHON) tools/ai/prepare_feature_payload.py \
+		--demo silence \
+		--out-dir $(AI_FEATURE_PAYLOAD_DIR) \
+		--name demo_silence
+
+.PHONY: ai-uart-packet-demo
+ai-uart-packet-demo: ai-feature-payload-demo
+	$(AI_PYTHON) tools/ai/pack_uart_payload.py \
+		--input $(AI_FEATURE_PAYLOAD_BIN) \
+		--out-dir $(AI_UART_PACKET_DIR) \
+		--name demo_silence
+
+.PHONY: ai-audio-assets-fetch
+ai-audio-assets-fetch: $(BUILD_DIR)
+	$(AI_PYTHON) tools/ai/fetch_tflm_micro_speech.py \
+		--out-dir $(TFLM_MICRO_SPEECH_DIR) \
+		--include-preprocessor \
+		--include-testdata
+
+.PHONY: ai-wav-feature-demo
+ai-wav-feature-demo: ai-audio-assets-fetch
+	$(AI_PYTHON) tools/ai/wav_to_feature_payload.py \
+		--wav $(TFLM_MICRO_SPEECH_YES_WAV) \
+		--out-dir $(AI_WAV_FEATURE_DIR) \
+		--name yes_1000ms
+
+.PHONY: ai-model-tflm-fetch
+ai-model-tflm-fetch: $(BUILD_DIR)
+	$(AI_PYTHON) tools/ai/fetch_tflm_micro_speech.py \
+		--out-dir $(TFLM_MICRO_SPEECH_DIR)
+
+.PHONY: ai-model-tflm-export
+ai-model-tflm-export: ai-model-tflm-fetch
+	$(AI_PYTHON) tools/ai/export_tinyconv_assets.py \
+		--model-tflite $(TFLM_MICRO_SPEECH_MODEL) \
+		--out-dir $(TFLM_MICRO_SPEECH_OUT) \
+		--sv-out $(TFLM_MICRO_SPEECH_PKG)
+
+.PHONY: ai-model-tflm-demo-golden
+ai-model-tflm-demo-golden: ai-model-tflm-fetch ai-feature-payload-demo
+	$(AI_PYTHON) tools/ai/export_tinyconv_assets.py \
+		--model-tflite $(TFLM_MICRO_SPEECH_MODEL) \
+		--input-npy $(AI_FEATURE_PAYLOAD_NPY) \
+		--out-dir $(BUILD_DIR)/ai_model_tflm_demo_golden \
+		--sv-out $(BUILD_DIR)/ai_model_tflm_demo_golden/soc_ai_model_pkg.sv
+
+.PHONY: ai-model-tflm-wav-demo-golden
+ai-model-tflm-wav-demo-golden: ai-model-tflm-fetch ai-wav-feature-demo
+	$(AI_PYTHON) tools/ai/export_tinyconv_assets.py \
+		--model-tflite $(TFLM_MICRO_SPEECH_MODEL) \
+		--input-npy $(AI_WAV_FEATURE_NPY) \
+		--out-dir $(BUILD_DIR)/ai_model_tflm_wav_demo_golden \
+		--sv-out $(BUILD_DIR)/ai_model_tflm_wav_demo_golden/soc_ai_model_pkg.sv
+
+.PHONY: ai-accel-tflm-full-smoke
+ai-accel-tflm-full-smoke: ai-model-tflm-demo-golden
+	$(VERILATOR) $(VERILATOR_FLAGS) -DSOC_AI_USE_MODEL_PKG \
+		--top-module tb_soc_ai_tinyconv_accel_full_model \
+		-Mdir $(BUILD_DIR)/ai_accel_tflm_full \
+		soc_map_pkg.sv \
+		$(BUILD_DIR)/ai_model_tflm_demo_golden/soc_ai_model_pkg.sv \
+		$(BUILD_DIR)/ai_model_tflm_demo_golden/soc_ai_model_golden_pkg.sv \
+		soc_ai_tinyconv_accel.sv tb_soc_ai_tinyconv_accel_full_model.sv
+	./$(BUILD_DIR)/ai_accel_tflm_full/Vtb_soc_ai_tinyconv_accel_full_model \
+		+input_memh=$(BUILD_DIR)/ai_model_tflm_demo_golden/input_vector.memh
+
+.PHONY: ai-accel-tflm-smoke
+ai-accel-tflm-smoke: ai-model-tflm-export
+	$(SIM) $(SIMFLAGS) -DSOC_AI_USE_MODEL_PKG -s tb_soc_ai_tinyconv_accel_model \
+		-o $(BUILD_DIR)/tb_soc_ai_tinyconv_accel_tflm_model.vvp \
+		soc_map_pkg.sv $(TFLM_MICRO_SPEECH_PKG) $(TFLM_MICRO_SPEECH_GOLDEN_PKG) \
+		soc_ai_tinyconv_accel.sv tb_soc_ai_tinyconv_accel_model.sv
+	$(RUN) $(BUILD_DIR)/tb_soc_ai_tinyconv_accel_tflm_model.vvp +input_memh=$(TFLM_MICRO_SPEECH_INPUT_MEMH)
+
+.PHONY: ai-tflm-smoke
+ai-tflm-smoke: ai-model-tflm-export ai-accel-tflm-smoke ai-island-tflm-smoke
+
+.PHONY: ai-island-tflm-smoke
+ai-island-tflm-smoke: ai-model-tflm-export
+	$(SIM) $(SIMFLAGS) -DSOC_AI_USE_MODEL_PKG -s tb_soc_ai_island_e2e \
+		-o $(BUILD_DIR)/tb_soc_ai_island_tflm_e2e.vvp \
+		soc_map_pkg.sv $(TFLM_MICRO_SPEECH_PKG) $(TFLM_MICRO_SPEECH_GOLDEN_PKG) \
+		soc_mem_sp.sv soc_ai_mem.sv soc_ai_csr.sv soc_ai_tinyconv_accel.sv \
+		tb_soc_ai_island_e2e.sv
+	$(RUN) $(BUILD_DIR)/tb_soc_ai_island_tflm_e2e.vvp
 
 .PHONY: soc-gpio-smoke
 soc-gpio-smoke: $(BUILD_DIR)

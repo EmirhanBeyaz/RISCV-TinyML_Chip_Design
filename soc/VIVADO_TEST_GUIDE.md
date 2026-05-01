@@ -71,10 +71,30 @@ Komut:
 vivado -mode batch -source soc/vivado_smoke.tcl -tclargs xc7a35tcpg236-1 rtl
 ```
 
+Resmi Micro Speech model package'i ile okumak/sentezlemek icin once package
+uret:
+
+```bash
+make -C soc AI_PYTHON=../.venv/bin/python ai-model-tflm-export
+```
+
+Sonra `model` modunu kullan:
+
+```bash
+vivado -mode batch -source soc/vivado_smoke.tcl -tclargs xc7a35tcpg236-1 rtl model
+vivado -mode batch -source soc/vivado_smoke.tcl -tclargs xc7a35tcpg236-1 ooc model
+```
+
+`nomodel` varsayilan moddur; bu modda accelerator sentetik/default agirlik
+fonksiyonlari ile okunur. `model` modu `SOC_AI_USE_MODEL_PKG` define eder ve
+`soc/build/ai_model_tflm_micro_speech/soc_ai_model_pkg.sv` dosyasini kaynaklara
+ekler.
+
 Bu komut şunları yapar:
 - `cv32e40p` manifest'inden RTL dosyalarını toplar
 - `soc/` içindeki SoC dosyalarını ekler
 - `cv32e40p_axi_soc` modülünü top olarak seçer
+- `soc/fpga_top_timing.xdc` varsa `clk_i` için 100 MHz timing constraint ekler
 - Vivado içinde `synth_design -rtl` çalıştırır
 
 Beklenen başarılı satırlar:
@@ -84,6 +104,23 @@ Beklenen başarılı satırlar:
 Bu aşama neyi kanıtlar:
 - dosyalar doğru bulunuyor mu
 - include dizinleri doğru mu
+
+## 4.1 Power / Temperature Raporunu Okuma
+
+Vivado `Report Power` ekranında `Confidence level: Low` yazıyorsa sıcaklık
+değerini gerçek kart sonucu gibi yorumlama. Bu durumda Vivado genelde
+simülasyon aktivitesi yerine vectorless tahmin yapar ve dinamik güç abartılı
+çıkabilir.
+
+İlk kontrol edilecekler:
+- `soc/fpga_top_timing.xdc` constraint dosyası projeye ekli mi
+- `clk_i` için clock constraint oluşmuş mu
+- `Report Methodology` kritik uyarıları ne diyor
+- gerçek board için ayrı `.xdc` pin/IO standard dosyası var mı
+- power raporunda `Confidence level` en azından `Medium` seviyesine çıktı mı
+
+Board-specific `.xdc` olmadan implementation geçebilir, ama power/timing raporu
+jüriye final kanıt olarak sunulacak seviyede değildir.
 - top-level hiyerarşi Vivado tarafından kurulabiliyor mu
 - temel SystemVerilog uyumluluğu yerinde mi
 

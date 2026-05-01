@@ -1,7 +1,9 @@
 .Xil/
 .NLOPTFAILED
 .codex
+.venv/
 .venv-ai/
+__pycache__/
 
 soc/build/
 

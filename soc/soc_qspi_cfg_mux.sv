@@ -32,8 +32,8 @@ module soc_qspi_cfg_mux (
   assign cfg_cmd_valid_o = !rsp_pending_q && (init_cmd_valid_i || sw_cmd_valid_i);
   assign cfg_cmd_data_o  = init_cmd_valid_i ? init_cmd_data_i : sw_cmd_data_i;
 
-  assign init_cmd_ready_o = !rsp_pending_q && init_cmd_valid_i && cfg_cmd_ready_i;
-  assign sw_cmd_ready_o   = !rsp_pending_q && !init_cmd_valid_i && sw_cmd_valid_i && cfg_cmd_ready_i;
+  assign init_cmd_ready_o = !rsp_pending_q && cfg_cmd_ready_i;
+  assign sw_cmd_ready_o   = !rsp_pending_q && !init_cmd_valid_i && cfg_cmd_ready_i;
 
   assign init_rsp_valid_o = cfg_rsp_valid_i && rsp_pending_q && (rsp_owner_q == OWNER_INIT);
   assign init_rsp_data_o  = cfg_rsp_data_i;

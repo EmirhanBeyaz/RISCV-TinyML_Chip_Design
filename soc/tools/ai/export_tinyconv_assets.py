@@ -894,6 +894,7 @@ def main(argv: list[str]) -> int:
         save_assets_npz(assets, out_dir / "tinyconv_assets.npz")
 
     write_manifest(assets, out_dir / "manifest.json")
+    write_model_smoke_files(assets, out_dir)
     if sv_out is not None:
         write_sv_package(assets, sv_out)
 

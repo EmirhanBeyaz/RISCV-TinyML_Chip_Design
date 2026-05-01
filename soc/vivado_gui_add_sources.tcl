@@ -9,11 +9,21 @@ set soc_dir    [file normalize $script_dir]
 set core_dir   [file normalize [file join $repo_root cv32e40p]]
 set core_rtl   [file normalize [file join $core_dir rtl]]
 set manifest   [file normalize [file join $core_dir cv32e40p_manifest.flist]]
+set ai_model_pkg [file normalize [file join $soc_dir build ai_model_tflm_micro_speech soc_ai_model_pkg.sv]]
+set timing_xdc [file normalize [file join $soc_dir fpga_top_timing.xdc]]
 
 # Default GUI top for FPGA-oriented Vivado checks.
 # Change this back to "cv32e40p_axi_soc" only if you explicitly want the raw
 # SoC top instead of the board-style wrapper.
 set target_top fpga_top
+
+# Optional official Micro Speech package mode.
+# Usage in Tcl Console before sourcing this script:
+#   set use_ai_model_pkg 1
+#   source /path/to/soc/vivado_gui_add_sources.tcl
+if {![info exists use_ai_model_pkg]} {
+  set use_ai_model_pkg 0
+}
 
 proc norm_subst {text design_rtl_dir} {
   set replaced [string map [list "\${DESIGN_RTL_DIR}" $design_rtl_dir] $text]
@@ -96,6 +106,16 @@ set soc_files [list \
   [file join $soc_dir cv32e40p_axi_soc.sv] \
 ]
 
+if {$use_ai_model_pkg} {
+  if {![file exists $ai_model_pkg]} {
+    puts "ERROR: AI model package not found: $ai_model_pkg"
+    puts "Generate it first from repo root with:"
+    puts "  make -C soc AI_PYTHON=../.venv/bin/python ai-model-tflm-export"
+    return -code error
+  }
+  lappend soc_files $ai_model_pkg
+}
+
 set all_files [concat $cv32_files $soc_files]
 set all_files [lsort -unique [lmap f $all_files {file normalize $f}]]
 set include_dirs [lsort -unique [lmap d $include_dirs {file normalize $d}]]
@@ -118,13 +138,31 @@ foreach f $all_files {
 if {[llength $files_to_add] > 0} {
   add_files -fileset sources_1 -norecurse $files_to_add
 }
+
+if {[file exists $timing_xdc]} {
+  set existing_xdc [list]
+  foreach f [get_files -of_objects [get_filesets constrs_1]] {
+    if {$f ne ""} {
+      lappend existing_xdc [file normalize $f]
+    }
+  }
+  if {[lsearch -exact [lsort -unique $existing_xdc] $timing_xdc] < 0} {
+    add_files -fileset constrs_1 -norecurse $timing_xdc
+  }
+}
+
 set_property include_dirs $include_dirs [get_filesets sources_1]
+if {$use_ai_model_pkg} {
+  set_property verilog_define {SOC_AI_USE_MODEL_PKG} [get_filesets sources_1]
+}
 set_property top $target_top [get_filesets sources_1]
 set_property target_language Verilog [current_project]
 update_compile_order -fileset sources_1
 
 puts "Vivado GUI source import completed."
 puts "Top module      : $target_top"
+puts "AI model package: $use_ai_model_pkg"
 puts "RTL file count  : [llength $all_files]"
 puts "New files added : [llength $files_to_add]"
 puts "Include dirs    : [llength $include_dirs]"
+puts "Timing XDC      : $timing_xdc"

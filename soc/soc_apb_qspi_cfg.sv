@@ -62,7 +62,7 @@ module soc_apb_qspi_cfg #(
   assign reg_access = psel_i && penable_i;
   assign reg_addr   = {paddr_i[APB_ADDR_WIDTH-1:2], 2'b00};
   assign cfg_cmd_access = reg_access && pwrite_i && (reg_addr == REG_CFG_CMD);
-  assign cfg_cmd_valid_o = cfg_cmd_access && cfg_cmd_ready_i;
+  assign cfg_cmd_valid_o = cfg_cmd_access;
   assign cfg_cmd_data_o  = pwdata_i;
   assign pready_o        = cfg_cmd_access ? cfg_cmd_ready_i : 1'b1;
 
@@ -82,7 +82,7 @@ module soc_apb_qspi_cfg #(
           end
         endcase
       end
-      if (cfg_cmd_valid_o) begin
+      if (cfg_cmd_valid_o && cfg_cmd_ready_i) begin
         cfg_last_cmd_q <= cfg_cmd_data_o;
       end
       if (cfg_rsp_valid_i) begin

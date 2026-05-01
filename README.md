@@ -16,7 +16,7 @@ Bugun itibariyla repo su ana kadar su zinciri calistirabiliyor:
 - self-checking sim testleri
 - Vivado `RTL elaboration`, `synthesis` ve `implementation` checkpoint
 
-Bu repo su an kart ustunde final demo bitstream'i degil. `fpga_top` implementation seviyesine geldi; karta ozel `.xdc`, gercek pin-seviyesi flash bring-up, egitilmis Micro Speech agirliklari ve accuracy/performance sign-off sonraki asamalardadir.
+Bu repo su an kart ustunde final demo bitstream'i degil. `fpga_top` implementation seviyesine geldi; karta ozel `.xdc`, gercek pin-seviyesi flash bring-up, resmi modelin board-level Vivado kaynak etkisi ve accuracy/performance sign-off sonraki asamalardadir.
 
 ## Klasor Yapisi
 
@@ -139,6 +139,10 @@ Buradan bakarak su ana mimariyi gorebilirsin:
 - [soc/MEMORY_MAP_V0.md](./soc/MEMORY_MAP_V0.md#L1)
 - [soc/AI_RUNTIME_CONTRACT.md](./soc/AI_RUNTIME_CONTRACT.md#L1)
 - [soc/AI_ACCELERATOR_STATUS.md](./soc/AI_ACCELERATOR_STATUS.md#L1)
+- [soc/TFLM_MICRO_SPEECH_REFERENCE.md](./soc/TFLM_MICRO_SPEECH_REFERENCE.md#L1)
+- [soc/AI_UART_PAYLOAD_PROTOCOL.md](./soc/AI_UART_PAYLOAD_PROTOCOL.md#L1)
+- [soc/AI_FIRMWARE_DEMO_FLOW.md](./soc/AI_FIRMWARE_DEMO_FLOW.md#L1)
+- [soc/PROJECT_REMAINING_WORK.md](./soc/PROJECT_REMAINING_WORK.md#L1)
 - [soc/QSPI_CFG_REGMAP.md](./soc/QSPI_CFG_REGMAP.md#L1)
 - [soc/VIVADO_TEST_GUIDE.md](./soc/VIVADO_TEST_GUIDE.md#L1)
 - [soc/VIVADO_IMPLEMENTATION_CHECKPOINT.md](./soc/VIVADO_IMPLEMENTATION_CHECKPOINT.md#L1)
@@ -207,7 +211,19 @@ make -C soc soc-timer-smoke
 make -C soc soc-i2c-smoke
 make -C soc qspi-cfg-smoke
 make -C soc qspi-xip-smoke
+make -C soc AI_PYTHON=../.venv/bin/python ai-smoke
+make -C soc AI_PYTHON=../.venv/bin/python ai-feature-payload-demo
+make -C soc AI_PYTHON=../.venv/bin/python ai-uart-packet-demo
+make -C soc AI_PYTHON=../.venv/bin/python ai-wav-feature-demo
 make -C soc ai-model-tool-smoke
+make -C soc AI_PYTHON=../.venv/bin/python ai-model-tflm-fetch
+make -C soc AI_PYTHON=../.venv/bin/python ai-model-tflm-export
+make -C soc AI_PYTHON=../.venv/bin/python ai-model-tflm-demo-golden
+make -C soc AI_PYTHON=../.venv/bin/python ai-model-tflm-wav-demo-golden
+make -C soc AI_PYTHON=../.venv/bin/python ai-accel-tflm-full-smoke
+make -C soc AI_PYTHON=../.venv/bin/python ai-accel-tflm-smoke
+make -C soc AI_PYTHON=../.venv/bin/python ai-island-tflm-smoke
+make -C soc AI_PYTHON=../.venv/bin/python ai-tflm-smoke
 make -C soc ai-accel-model-smoke
 make -C soc ai-island-e2e-smoke
 make -C soc ai-uart-to-accel-e2e-smoke
@@ -229,6 +245,14 @@ Proje kokunden:
 ```bash
 vivado -mode batch -source soc/vivado_smoke.tcl -tclargs xc7a35tcpg236-1 rtl
 vivado -mode batch -source soc/vivado_smoke.tcl -tclargs xc7a35tcpg236-1 ooc
+```
+
+Resmi Micro Speech model package'i ile:
+
+```bash
+make -C soc AI_PYTHON=../.venv/bin/python ai-model-tflm-export
+vivado -mode batch -source soc/vivado_smoke.tcl -tclargs xc7a35tcpg236-1 rtl model
+vivado -mode batch -source soc/vivado_smoke.tcl -tclargs xc7a35tcpg236-1 ooc model
 ```
 
 Bu iki komutun anlami:
@@ -268,6 +292,9 @@ AI tarafinda su altyapi artik entegre ve smoke testlidir:
 - `AI_IRQ`: hizlandirici done durumunda fast IRQ bit 19'a bagli
 - `soc_ai_tinyconv_accel`: 49x40 input, depthwise-conv sekilli tarama, ReLU, FC-benzeri skor ve argmax akisi
 - `tools/ai/export_tinyconv_assets.py`: gercek `.tflite`/`.npz` model asset ve golden uretim araci
+- resmi TFLite Micro `micro_speech_quantized.tflite` modelini build asamasinda indirip RTL package formatina cevirme
+- `49x40 = 1960 byte` feature payload uretme/dogrulama araci
+- yaklasik WAV -> feature payload demo araci
 
 ## Su An Ne Eksik
 
@@ -275,6 +302,7 @@ AI harici mimaride hala sonraki fazda olan basliklar:
 
 - karta ozel `.xdc`
 - pin-seviyesi gercek QSPI flash bring-up
+- timing/power/resource raporlarinin final board constraintleriyle yenilenmesi
 - daha urunlesmis boot guvenlikleri:
   - magic
   - size/bounds check
@@ -286,11 +314,19 @@ AI harici mimaride hala sonraki fazda olan basliklar:
 
 AI tarafinda kalan yarismaya kritik isler:
 
-- Resmi TFLite Micro Speech quantized modeli bu tool ile islemek: `make -C soc ai-model-tool-smoke` akisi hazir, gercek `.tflite` dosyasi gerekiyor
-- Sentetik agirlik fonksiyonlarini gercek egitilmis agirlik/bias/scale degerleriyle degistirmek
-- Accuracy hedefini yazilim referansina gore `%10` pencerede raporlamak
+- Resmi model package'li Vivado akisini board constraintleriyle tekrar calistirip kaynak/timing etkisini raporlamak
+- Full-shape 49x40 resmi model RTL testini periyodik kosmak
+- Resmi bit-exact audio preprocessing yolunu cozmek
+  - `audio_preprocessor_int8.tflite`, TFLM Signal Library custom op'lari ister
+  - mevcut `wav_to_feature_payload.py` sadece demo/veri-yolu icin yaklasik yoldur
+- Accuracy hedefini yazilim/TFLite referansina gore raporlamak
 - CPU firmware ile UART1 input -> AI start -> IRQ ISR -> UART0 result akisina e2e demo eklemek
+- UART payload protokolunun firmware parser/result response kismini uygulamak
+- AI resource/performance raporunu cikarmak
 - AXI/AXI-Lite protocol checker ve fiziksel tasarim/GDSII sign-off akisini tamamlamak
+
+Detayli ve guncel kalan is listesi:
+- [soc/PROJECT_REMAINING_WORK.md](./soc/PROJECT_REMAINING_WORK.md#L1)
 
 ## Repo Icinde Calisirken Pratik Kurallar
 
