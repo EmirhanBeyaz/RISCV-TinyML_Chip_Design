@@ -1,3 +1,6 @@
+# Downgrade false-positive incomplete case warnings for 3rd-party IPs
+set_msg_config -id {Synth 37-75} -new_severity {WARNING}
+
 if {[catch {current_project} project_name] || $project_name eq ""} {
   puts "ERROR: Open or create a Vivado project first, then run this script."
   return -code error

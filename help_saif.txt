@@ -1,0 +1,51 @@
+
+****** Vivado v2024.2 (64-bit)
+  **** SW Build 5239630 on Fri Nov 08 22:34:34 MST 2024
+  **** IP Build 5239520 on Sun Nov 10 16:12:51 MST 2024
+  **** SharedData Build 5239561 on Fri Nov 08 14:39:27 MST 2024
+  **** Start of session at: Mon May  4 15:50:49 2026
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source get_help.tcl
+# open_checkpoint soc/build/vivado_power/post_route.dcp
+Command: open_checkpoint soc/build/vivado_power/post_route.dcp
+
+Starting open_checkpoint Task
+
+Time (s): cpu = 00:00:00.03 ; elapsed = 00:00:00.03 . Memory (MB): peak = 1475.195 ; gain = 0.000 ; free physical = 2169 ; free virtual = 10146
+INFO: [Device 21-403] Loading part xc7a100tcsg324-1
+Netlist sorting complete. Time (s): cpu = 00:00:00.07 ; elapsed = 00:00:00.06 . Memory (MB): peak = 1475.223 ; gain = 0.000 ; free physical = 2143 ; free virtual = 10120
+INFO: [Netlist 29-17] Analyzing 806 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+INFO: [Project 1-479] Netlist was created with Vivado 2024.2
+INFO: [Project 1-570] Preparing netlist for logic optimization
+Read ShapeDB Complete: Time (s): cpu = 00:00:00.02 ; elapsed = 00:00:00.02 . Memory (MB): peak = 1550.973 ; gain = 4.000 ; free physical = 2051 ; free virtual = 10028
+INFO: [Timing 38-478] Restoring timing data from binary archive.
+INFO: [Timing 38-479] Binary timing data restore complete.
+INFO: [Project 1-856] Restoring constraints from binary archive.
+INFO: [Project 1-853] Binary constraint restore complete.
+INFO: [Designutils 20-5722] Start Reading Physical Databases.
+Reading placement.
+Read Netlist Cache: Time (s): cpu = 00:00:00.01 ; elapsed = 00:00:00.01 . Memory (MB): peak = 2146.457 ; gain = 0.000 ; free physical = 1532 ; free virtual = 9507
+Reading placer database...
+Read Device Cache: Time (s): cpu = 00:00:00.01 ; elapsed = 00:00:00 . Memory (MB): peak = 2146.457 ; gain = 0.000 ; free physical = 1532 ; free virtual = 9507
+Read PlaceDB: Time (s): cpu = 00:00:00.3 ; elapsed = 00:00:00.31 . Memory (MB): peak = 2146.457 ; gain = 0.000 ; free physical = 1524 ; free virtual = 9500
+Read PulsedLatchDB: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2146.457 ; gain = 0.000 ; free physical = 1524 ; free virtual = 9500
+Reading routing.
+Read RouteStorage: Time (s): cpu = 00:00:00.2 ; elapsed = 00:00:00.06 . Memory (MB): peak = 2149.457 ; gain = 3.000 ; free physical = 1526 ; free virtual = 9501
+Read Physdb Files: Time (s): cpu = 00:00:00.53 ; elapsed = 00:00:00.39 . Memory (MB): peak = 2149.457 ; gain = 3.000 ; free physical = 1526 ; free virtual = 9501
+Restored from archive | CPU: 0.570000 secs | Memory: 18.142593 MB |
+Finished XDEF File Restore: Time (s): cpu = 00:00:00.56 ; elapsed = 00:00:00.42 . Memory (MB): peak = 2149.457 ; gain = 9.938 ; free physical = 1526 ; free virtual = 9501
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2149.457 ; gain = 0.000 ; free physical = 1526 ; free virtual = 9501
+INFO: [Project 1-111] Unisim Transformation Summary:
+  A total of 35 instances were transformed.
+  IOBUF => IOBUF (IBUF, OBUFT): 5 instances
+  RAM32M => RAM32M (RAMD32(x6), RAMS32(x2)): 2 instances
+  RAM32X1D => RAM32X1D (RAMD32(x2)): 28 instances
+
+INFO: [Project 1-604] Checkpoint was created with Vivado v2024.2 (64-bit) build 5239630
+open_checkpoint: Time (s): cpu = 00:00:09 ; elapsed = 00:00:09 . Memory (MB): peak = 2157.457 ; gain = 682.262 ; free physical = 1526 ; free virtual = 9501
+# help read_saif
+# exit
+INFO: [Common 17-206] Exiting Vivado at Mon May  4 15:51:00 2026...

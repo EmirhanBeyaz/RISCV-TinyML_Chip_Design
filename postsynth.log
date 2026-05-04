@@ -1,0 +1,171 @@
+
+****** Vivado v2024.2 (64-bit)
+  **** SW Build 5239630 on Fri Nov 08 22:34:34 MST 2024
+  **** IP Build 5239520 on Sun Nov 10 16:12:51 MST 2024
+  **** SharedData Build 5239561 on Fri Nov 08 14:39:27 MST 2024
+  **** Start of session at: Mon May  4 15:56:54 2026
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source run_postsynth_sim.tcl
+# set out_dir soc/build/vivado_power
+# set report_dir soc/build/vivado_power/reports
+# open_checkpoint [file join $out_dir post_synth.dcp]
+Command: open_checkpoint soc/build/vivado_power/post_synth.dcp
+
+Starting open_checkpoint Task
+
+Time (s): cpu = 00:00:00.03 ; elapsed = 00:00:00.03 . Memory (MB): peak = 1474.195 ; gain = 0.000 ; free physical = 3499 ; free virtual = 11441
+INFO: [Device 21-403] Loading part xc7a100tcsg324-1
+Netlist sorting complete. Time (s): cpu = 00:00:00.06 ; elapsed = 00:00:00.06 . Memory (MB): peak = 1474.223 ; gain = 0.000 ; free physical = 3407 ; free virtual = 11349
+INFO: [Netlist 29-17] Analyzing 810 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+INFO: [Project 1-479] Netlist was created with Vivado 2024.2
+INFO: [Project 1-570] Preparing netlist for logic optimization
+Read ShapeDB Complete: Time (s): cpu = 00:00:00.01 ; elapsed = 00:00:00.01 . Memory (MB): peak = 1548.973 ; gain = 2.000 ; free physical = 3314 ; free virtual = 11257
+INFO: [Timing 38-478] Restoring timing data from binary archive.
+INFO: [Timing 38-479] Binary timing data restore complete.
+INFO: [Project 1-856] Restoring constraints from binary archive.
+INFO: [Project 1-853] Binary constraint restore complete.
+INFO: [Designutils 20-5722] Start Reading Physical Databases.
+Reading placement.
+Read Netlist Cache: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2010.582 ; gain = 0.000 ; free physical = 2878 ; free virtual = 10820
+Reading placer database...
+Read Device Cache: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.01 . Memory (MB): peak = 2010.582 ; gain = 0.000 ; free physical = 2878 ; free virtual = 10820
+Read PlaceDB: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2010.582 ; gain = 0.000 ; free physical = 2878 ; free virtual = 10820
+Read PulsedLatchDB: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2010.582 ; gain = 0.000 ; free physical = 2878 ; free virtual = 10820
+Reading routing.
+Read RouteStorage: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2074.613 ; gain = 64.031 ; free physical = 2877 ; free virtual = 10820
+Read Physdb Files: Time (s): cpu = 00:00:00.01 ; elapsed = 00:00:00.01 . Memory (MB): peak = 2074.613 ; gain = 64.031 ; free physical = 2877 ; free virtual = 10820
+Restored from archive | CPU: 0.040000 secs | Memory: 1.106438 MB |
+Finished XDEF File Restore: Time (s): cpu = 00:00:00.04 ; elapsed = 00:00:00.04 . Memory (MB): peak = 2074.613 ; gain = 64.031 ; free physical = 2877 ; free virtual = 10820
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2074.613 ; gain = 0.000 ; free physical = 2877 ; free virtual = 10819
+INFO: [Project 1-111] Unisim Transformation Summary:
+  A total of 35 instances were transformed.
+  IOBUF => IOBUF (IBUF, OBUFT): 5 instances
+  RAM32M => RAM32M (RAMD32(x6), RAMS32(x2)): 2 instances
+  RAM32X1D => RAM32X1D (RAMD32(x2)): 28 instances
+
+INFO: [Project 1-604] Checkpoint was created with Vivado v2024.2 (64-bit) build 5239630
+open_checkpoint: Time (s): cpu = 00:00:08 ; elapsed = 00:00:08 . Memory (MB): peak = 2074.613 ; gain = 600.418 ; free physical = 2877 ; free virtual = 10819
+# puts "Writing post-synthesis functional netlist..."
+Writing post-synthesis functional netlist...
+# write_verilog -force -mode funcsim [file join $out_dir post_synth_netlist.v]
+# puts "Setting up simulation..."
+Setting up simulation...
+# create_project -force sim_proj soc/build/vivado_power/sim_proj -part xc7a100tcsg324-1
+# add_files -fileset sim_1 -norecurse [file join $out_dir post_synth_netlist.v]
+# add_files -fileset sim_1 -norecurse soc/tb_cv32e40p_axi_soc_real.sv
+# set_property top tb_cv32e40p_axi_soc_real [get_filesets sim_1]
+# set_property top_lib xil_defaultlib [get_filesets sim_1]
+# set_property target_simulator XSim [current_project]
+# set_property -name {xsim.simulate.runtime} -value {20us} -objects [get_filesets sim_1]
+# update_compile_order -fileset sim_1
+# puts "Launching post-synth simulation..."
+Launching post-synth simulation...
+# set_property delay_based_simulation 1 [get_filesets sim_1]
+# launch_simulation -mode post-synthesis -type functional
+Command: launch_simulation  -mode post-synthesis -type functional
+INFO: [Vivado 12-12493] Simulation top is 'tb_cv32e40p_axi_soc_real'
+INFO: [Vivado 12-5682] Launching post-synthesis functional simulation in '/home/emirhan/Desktop/VHDL/soc/build/vivado_power/sim_proj/sim_proj.sim/sim_1/synth/func/xsim'
+INFO: [SIM-utils-51] Simulation object is 'sim_1'
+INFO: [SIM-utils-72] Using boost library from '/home/emirhan/amd/Vivado/2024.2/tps/boost_1_72_0'
+ERROR: [SIM-utils-69] No open design in memory! Please run 'Synthesis' from the GUI or execute 'launch_runs <synth>' command from the Tcl console before running post-synthesis netlist simulation.
+INFO: [SIM-utils-54] Inspecting design source files for 'tb_cv32e40p_axi_soc_real' in fileset 'sim_1'...
+INFO: [USF-XSim-2] XSim::Compile design
+INFO: [USF-XSim-61] Executing 'COMPILE and ANALYZE' step in '/home/emirhan/Desktop/VHDL/soc/build/vivado_power/sim_proj/sim_proj.sim/sim_1/synth/func/xsim'
+xvlog --incr --relax -L uvm -prj tb_cv32e40p_axi_soc_real_vlog.prj
+INFO: [VRFC 10-2263] Analyzing Verilog file "/home/emirhan/Desktop/VHDL/soc/build/vivado_power/post_synth_netlist.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module apb_gpiov2
+INFO: [VRFC 10-311] analyzing module apb_timer_unit
+INFO: [VRFC 10-311] analyzing module axi_lite_ram
+INFO: [VRFC 10-311] analyzing module cv32e40p_aligner
+INFO: [VRFC 10-311] analyzing module cv32e40p_alu
+INFO: [VRFC 10-311] analyzing module cv32e40p_alu_div
+INFO: [VRFC 10-311] analyzing module cv32e40p_axi_soc
+INFO: [VRFC 10-311] analyzing module cv32e40p_controller
+INFO: [VRFC 10-311] analyzing module cv32e40p_core
+INFO: [VRFC 10-311] analyzing module cv32e40p_cs_registers
+INFO: [VRFC 10-311] analyzing module cv32e40p_ex_stage
+INFO: [VRFC 10-311] analyzing module cv32e40p_fifo
+INFO: [VRFC 10-311] analyzing module cv32e40p_id_stage
+INFO: [VRFC 10-311] analyzing module cv32e40p_if_stage
+INFO: [VRFC 10-311] analyzing module cv32e40p_int_controller
+INFO: [VRFC 10-311] analyzing module cv32e40p_load_store_unit
+INFO: [VRFC 10-311] analyzing module cv32e40p_mult
+INFO: [VRFC 10-311] analyzing module cv32e40p_obi_interface
+INFO: [VRFC 10-311] analyzing module cv32e40p_obi_to_axi_lite
+INFO: [VRFC 10-311] analyzing module cv32e40p_popcnt
+INFO: [VRFC 10-311] analyzing module cv32e40p_prefetch_buffer
+INFO: [VRFC 10-311] analyzing module cv32e40p_prefetch_controller
+INFO: [VRFC 10-311] analyzing module cv32e40p_register_file
+INFO: [VRFC 10-311] analyzing module cv32e40p_sleep_unit
+INFO: [VRFC 10-311] analyzing module cv32e40p_top
+INFO: [VRFC 10-311] analyzing module fpga_top
+INFO: [VRFC 10-311] analyzing module fpga_top_arty_a7
+INFO: [VRFC 10-311] analyzing module qflexpress
+INFO: [VRFC 10-311] analyzing module soc_ai_csr
+INFO: [VRFC 10-311] analyzing module soc_ai_mem
+INFO: [VRFC 10-311] analyzing module soc_ai_tinyconv_accel
+INFO: [VRFC 10-311] analyzing module soc_ai_uart_loader
+INFO: [VRFC 10-311] analyzing module soc_apb_gpio
+INFO: [VRFC 10-311] analyzing module soc_apb_i2c_master
+INFO: [VRFC 10-311] analyzing module soc_apb_qspi_cfg
+INFO: [VRFC 10-311] analyzing module soc_apb_timer
+INFO: [VRFC 10-311] analyzing module soc_axi_lite_1x2
+INFO: [VRFC 10-311] analyzing module soc_axi_lite_1x2__parameterized0
+INFO: [VRFC 10-311] analyzing module soc_axi_lite_1x2__parameterized1
+INFO: [VRFC 10-311] analyzing module soc_axi_lite_1x2__parameterized2
+INFO: [VRFC 10-311] analyzing module soc_axi_lite_1x2__parameterized3
+INFO: [VRFC 10-311] analyzing module soc_axi_lite_1x2__parameterized4
+INFO: [VRFC 10-311] analyzing module soc_axi_lite_1x2__parameterized5
+INFO: [VRFC 10-311] analyzing module soc_axi_lite_1x2__parameterized6
+INFO: [VRFC 10-311] analyzing module soc_axi_lite_apb_island
+INFO: [VRFC 10-311] analyzing module soc_axi_lite_imem
+INFO: [VRFC 10-311] analyzing module soc_axi_lite_qspi_xip
+INFO: [VRFC 10-311] analyzing module soc_axi_lite_uart
+INFO: [VRFC 10-311] analyzing module soc_axi_lite_uart_0
+INFO: [VRFC 10-311] analyzing module soc_dmem
+INFO: [VRFC 10-311] analyzing module soc_imem
+INFO: [VRFC 10-311] analyzing module soc_mem_sp
+INFO: [VRFC 10-311] analyzing module soc_mem_sp__parameterized0
+INFO: [VRFC 10-311] analyzing module soc_mem_sp__parameterized0_5
+INFO: [VRFC 10-311] analyzing module soc_mem_sp__parameterized1
+INFO: [VRFC 10-311] analyzing module soc_mem_sp__parameterized2
+INFO: [VRFC 10-311] analyzing module soc_qspi_cfg_mux
+INFO: [VRFC 10-311] analyzing module soc_qspi_init_seq
+INFO: [VRFC 10-311] analyzing module soc_qspi_xip
+INFO: [VRFC 10-311] analyzing module soc_rom
+INFO: [VRFC 10-311] analyzing module timer_unit_counter
+INFO: [VRFC 10-311] analyzing module timer_unit_counter_3
+INFO: [VRFC 10-311] analyzing module timer_unit_counter_presc
+INFO: [VRFC 10-311] analyzing module timer_unit_counter_presc_4
+INFO: [VRFC 10-311] analyzing module uart_rx
+INFO: [VRFC 10-311] analyzing module uart_rx_1
+INFO: [VRFC 10-311] analyzing module uart_rx_6
+INFO: [VRFC 10-311] analyzing module uart_tx
+INFO: [VRFC 10-311] analyzing module uart_tx_2
+INFO: [VRFC 10-311] analyzing module glbl
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "/home/emirhan/Desktop/VHDL/soc/tb_cv32e40p_axi_soc_real.sv" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module obi_instr_mem
+ERROR: [VRFC 10-2989] 'soc_map_pkg' is not declared [/home/emirhan/Desktop/VHDL/soc/tb_cv32e40p_axi_soc_real.sv:15]
+ERROR: [VRFC 10-2989] 'SOC_EXT_TEST_BASE_ADDR' is not declared [/home/emirhan/Desktop/VHDL/soc/tb_cv32e40p_axi_soc_real.sv:18]
+ERROR: [VRFC 10-2989] 'SOC_EXT_TEST_STATUS_ADDR' is not declared [/home/emirhan/Desktop/VHDL/soc/tb_cv32e40p_axi_soc_real.sv:19]
+ERROR: [VRFC 10-2989] 'SOC_QSPI_XIP_BASE_ADDR' is not declared [/home/emirhan/Desktop/VHDL/soc/tb_cv32e40p_axi_soc_real.sv:119]
+ERROR: [VRFC 10-2989] 'SOC_QSPI_XIP_BASE_ADDR' is not declared [/home/emirhan/Desktop/VHDL/soc/tb_cv32e40p_axi_soc_real.sv:120]
+ERROR: [VRFC 10-8530] module 'obi_instr_mem' is ignored due to previous errors [/home/emirhan/Desktop/VHDL/soc/tb_cv32e40p_axi_soc_real.sv:3]
+INFO: [VRFC 10-311] analyzing module tb_cv32e40p_axi_soc_real
+ERROR: [VRFC 10-2989] 'soc_map_pkg' is not declared [/home/emirhan/Desktop/VHDL/soc/tb_cv32e40p_axi_soc_real.sv:177]
+ERROR: [VRFC 10-2989] 'SOC_EXT_TEST_STATUS_ADDR' is not declared [/home/emirhan/Desktop/VHDL/soc/tb_cv32e40p_axi_soc_real.sv:179]
+ERROR: [VRFC 10-2989] 'SOC_QSPI_XIP_BASE_ADDR' is not declared [/home/emirhan/Desktop/VHDL/soc/tb_cv32e40p_axi_soc_real.sv:379]
+ERROR: [VRFC 10-8530] module 'tb_cv32e40p_axi_soc_real' is ignored due to previous errors [/home/emirhan/Desktop/VHDL/soc/tb_cv32e40p_axi_soc_real.sv:175]
+INFO: [USF-XSim-69] 'compile' step finished in '1' seconds
+INFO: [USF-XSim-99] Step results log file:'/home/emirhan/Desktop/VHDL/soc/build/vivado_power/sim_proj/sim_proj.sim/sim_1/synth/func/xsim/xvlog.log'
+ERROR: [USF-XSim-62] 'compile' step failed with error(s). Please check the Tcl console output or '/home/emirhan/Desktop/VHDL/soc/build/vivado_power/sim_proj/sim_proj.sim/sim_1/synth/func/xsim/xvlog.log' file for more information.
+ERROR: [Vivado 12-4473] Detected error while running simulation. Please correct the issue and retry this operation.
+ERROR: [Common 17-39] 'launch_simulation' failed due to earlier errors.
+
+    while executing
+"launch_simulation -mode post-synthesis -type functional"
+    (file "run_postsynth_sim.tcl" line 27)
+INFO: [Common 17-206] Exiting Vivado at Mon May  4 15:57:08 2026...

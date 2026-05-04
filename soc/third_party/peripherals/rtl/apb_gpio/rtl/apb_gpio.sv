@@ -84,6 +84,7 @@ module apb_gpiov2 #(
   logic [GPIO_COUNT-1:0] block_int_next;
 
   integer idx;
+  integer idx_ff;
 
   assign gpio_in_sync = r_gpio_in_reg;
   assign PREADY       = 1'b1;
@@ -149,9 +150,9 @@ module apb_gpiov2 #(
       r_gpio_rise    <= '0;
       r_gpio_fall    <= '0;
       s_block_int    <= '0;
-      for (idx = 0; idx < GPIO_COUNT; idx = idx + 1) begin
-        r_gpio_inttype[idx] <= '0;
-        r_gpio_dir_mode[idx] <= '0;
+      for (idx_ff = 0; idx_ff < GPIO_COUNT; idx_ff = idx_ff + 1) begin
+        r_gpio_inttype[idx_ff] <= '0;
+        r_gpio_dir_mode[idx_ff] <= '0;
       end
     end else begin
       r_gpio_sync0  <= gpio_in;
