@@ -1,6 +1,5 @@
 .Xil/
 .NLOPTFAILED
-.codex
 .venv/
 .venv-ai/
 __pycache__/
@@ -11,6 +10,9 @@ vivado.jou
 vivado.log
 vivado_*.backup.jou
 vivado_*.backup.log
+*.jou
+*.log
+*.pid
 clockInfo.txt
 
 soc/vivado.jou
@@ -26,3 +28,39 @@ soc/vivado_*.backup.log
 *.ip_user_files/
 *.sim/
 *.srcs/
+
+# Simulation and waveform artefacts.
+*.vcd
+*.vvp
+*.gtkw
+*.fst
+*.vcd.gz
+
+# Generated simulator file lists with machine-local paths.
+soc/cv32e40p_files.f
+soc/icarus_soc_files.f
+soc/icarus_soc_files_abs.f
+soc/verilator_soc_files.f
+soc/verilator_soc_files_clean.f
+
+# Bare-metal benchmark build outputs. Keep the source, linker script and startup code.
+soc/sw/*.elf
+soc/sw/*.bin
+soc/sw/*.hex
+soc/sw/*_disasm.txt
+
+# Local or generated presentation artefacts that are too large for normal Git history.
+presentation_artifacts/librelane_run/
+presentation_artifacts/waves/*.vcd
+presentation_artifacts/logs/*.log.compile
+site/.git/
+site/librelane_outputs/**/COMMANDS
+site/librelane_outputs/**/_env.tcl
+site/librelane_outputs/**/config.json
+site/librelane_outputs/**/state_*.json
+site/librelane_outputs/**/*.process_stats.json
+site/librelane_outputs/**/*.lvs
+site/librelane_outputs/*.def
+site/librelane_outputs/*.gds
+site/librelane_outputs/*.nl.v
+site/librelane_outputs/*.pnl.v

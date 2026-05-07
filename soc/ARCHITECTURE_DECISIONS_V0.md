@@ -1,8 +1,8 @@
 # Architecture Decisions V0
 
 Bu dosya, projenin mevcut resmi teknik yönünü sabitlemek için tutulur.
-Başvuru omurgası [İnüfest Rapor.pdf](</home/emirhan/Downloads/İnüfest Rapor.pdf>) ile uyum korunur.
-Detay teknik yürütme [2026_OTR 13.03.2026.pdf](</home/emirhan/Downloads/2026_OTR%2013.03.2026.pdf>) doğrultusunda yapılır.
+Başvuru omurgası proje raporu ile uyumlu tutulur.
+Detay teknik yürütme takımın güncel teknik planı doğrultusunda yapılır.
 
 ## 1. Sabit Omurga
 

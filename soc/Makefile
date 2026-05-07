@@ -474,6 +474,15 @@ rom-image-smoke: $(BUILD_DIR)/cv32e40p_manifest_local.flist
 	$(SOC_TOP_RTL) axi_lite_ram.sv tb_cv32e40p_axi_soc_rom_image.sv
 	./$(BUILD_DIR)/rom_image/Vtb_cv32e40p_axi_soc_rom_image
 
+.PHONY: benchmark-smoke
+benchmark-smoke: $(BUILD_DIR)/cv32e40p_manifest_local.flist
+	$(VERILATOR) $(VERILATOR_FLAGS) --top-module tb_soc_benchmark_icarus \
+	-Mdir $(BUILD_DIR)/benchmark_smoke \
+	-f $(BUILD_DIR)/cv32e40p_manifest_local.flist \
+	$(SOC_INC_FLAGS) \
+	$(SOC_TOP_RTL) fpga_top.sv axi_lite_ram.sv tb_soc_benchmark_icarus.sv
+	cd .. && ./soc/$(BUILD_DIR)/benchmark_smoke/Vtb_soc_benchmark_icarus
+
 .PHONY: clean
 clean:
 	rm -rf $(BUILD_DIR)

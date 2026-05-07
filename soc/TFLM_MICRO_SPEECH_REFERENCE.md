@@ -187,7 +187,7 @@ GUI projesinde ayni modu kullanmak icin Tcl Console:
 
 ```tcl
 set use_ai_model_pkg 1
-source /home/emirhan/Desktop/VHDL/soc/vivado_gui_add_sources.tcl
+source soc/vivado_gui_add_sources.tcl
 ```
 
 ## V1 Siniri

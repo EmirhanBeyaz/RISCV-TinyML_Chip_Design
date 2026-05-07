@@ -23,7 +23,11 @@ Bu repo su an kart ustunde final demo bitstream'i degil. `fpga_top` implementati
 ```text
 .
 |-- cv32e40p/              # Upstream CV32E40P core
-|-- demo/                  # Juri/sunum icin statik SoC demo paneli
+|-- index.html             # GitHub Pages giris sayfasi
+|-- site/
+|   |-- assets/            # Sunum demosu icin CSS ve JavaScript
+|   |-- *.json             # KLayout 2.5D katman verileri
+|   `-- *.html             # Statik sunum giris dosyasi
 |-- soc/                   # Tum SoC RTL, testbench ve proje dokumanlari
 |   |-- third_party/       # Projede kullanilan ucuncu taraf RTL kaynaklari
 |   |-- *.sv               # SoC bloklari ve testbenchler
@@ -167,12 +171,21 @@ Atif ve kaynak bilgileri:
 Kart elde yokken mimariyi ve Vivado kanitlarini gorsel olarak anlatmak icin:
 
 ```bash
-xdg-open demo/index.html
+python3 -m http.server 8080
+```
+
+Ardindan tarayicida ac:
+
+```text
+http://localhost:8080/
 ```
 
 Panel dosyalari:
-- [demo/index.html](./demo/index.html#L1)
-- [demo/README.md](./demo/README.md#L1)
+- [index.html](./index.html#L1)
+- [site/sunum.html](./site/sunum.html#L1)
+- [site/assets/app.js](./site/assets/app.js#L1)
+- [site/assets/styles.css](./site/assets/styles.css#L1)
+- [site/README.md](./site/README.md#L1)
 
 ### Gereken Araclar
 

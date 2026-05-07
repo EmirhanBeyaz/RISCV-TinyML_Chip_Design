@@ -46,15 +46,20 @@ Yeni başlayan biri bu sırayı takip etmeli:
 
 Sunum için:
 
-- [demo/index.html](./demo/index.html)
-- [demo/README.md](./demo/README.md)
+- [index.html](./index.html)
+- [site/sunum.html](./site/sunum.html)
+- [site/README.md](./site/README.md)
 
 ## 3. Klasör Mantığı
 
 ```text
 .
 |-- cv32e40p/              # CV32E40P işlemci çekirdeği
-|-- demo/                  # Jüri/sunum için statik arayüz
+|-- index.html             # GitHub Pages giriş sayfası
+|-- site/
+|   |-- assets/            # Sunum demosu için CSS ve JavaScript
+|   |-- *.json             # KLayout 2.5D katman verileri
+|   `-- *.html             # Statik sunum giriş dosyası
 |-- soc/                   # SoC RTL, testbench, bellek image'ları ve dokümanlar
 |   |-- third_party/       # Kullanılan açık kaynak RTL referansları ve atıflar
 |   |-- *.sv               # Tasarım ve testbench dosyaları
@@ -188,8 +193,10 @@ Not:
 Kart elde yokken jüriye tasarımı anlatmak için:
 
 ```bash
-xdg-open demo/index.html
+python3 -m http.server 8080
 ```
+
+Ardından tarayıcıda `http://localhost:8080/` adresini aç.
 
 Panelin anlattığı şeyler:
 

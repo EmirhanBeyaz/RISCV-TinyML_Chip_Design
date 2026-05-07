@@ -1,0 +1,12 @@
+[ITERATIVE NUMERIC WINDOW]
+window_cycles=100000 rounds=3 scale_to_1s=x500
+newton_sqrt windows=1394/1394/1394 avg_iter=1394 iter_per_sec=697000 min=1394 max=1394 stable=yes acc=56117
+bisection_sqrt windows=1524/1523/1523 avg_iter=1523 iter_per_sec=761666 min=1523 max=1524 stable=yes acc=31392
+newton_reciprocal windows=1924/1924/1924 avg_iter=1924 iter_per_sec=962000 min=1924 max=1924 stable=yes acc=11753
+jacobi_2x2 windows=935/935/935 avg_iter=935 iter_per_sec=467500 min=935 max=935 stable=yes acc=32762
+cordic_sincos windows=396/396/396 avg_iter=396 iter_per_sec=198000 min=396 max=396 stable=yes acc=31035
+fir16_filter windows=269/269/269 avg_iter=269 iter_per_sec=134500 min=269 max=269 stable=yes acc=111061
+matvec8x8 windows=77/77/77 avg_iter=77 iter_per_sec=38500 min=77 max=77 stable=yes acc=314127
+crc32_64B windows=18/18/18 avg_iter=18 iter_per_sec=9000 min=18 max=18 stable=yes acc=1652910497
+sort32 windows=18/19/18 avg_iter=18 iter_per_sec=9166 min=18 max=19 stable=yes acc=20775
+pointer_chase64 windows=149/149/149 avg_iter=149 iter_per_sec=74500 min=149 max=149 stable=yes acc=64

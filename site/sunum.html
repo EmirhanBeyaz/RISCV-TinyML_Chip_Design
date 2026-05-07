@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>RISC-V SoC Sunum Paneli</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <!-- Static presentation demo. Serve this directory over HTTP so JSON layer data can be loaded. -->
+    <header class="topbar">
+      <a class="brand" href="#overview" aria-label="Demo baslangici">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>
+          <strong>CD-ROM Microcontroller</strong>
+          <small>RISC-V SoC + AI + Fiziksel Tasarım</small>
+        </span>
+      </a>
+      <nav aria-label="Sayfa bolumleri">
+        <a href="#overview">Özet</a>
+        <a href="#architecture">Mimari</a>
+        <a href="#layers">Katmanlar</a>
+        <a href="#metrics">Metrikler</a>
+        <a href="#benchmark">Performans</a>
+        <a href="#evidence">Kanıt</a>
+      </nav>
+    </header>
+
+    <main>
+      <section id="overview" class="hero reveal">
+        <div class="hero-copy">
+          <p class="eyebrow">RISC-V SoC demonstrator</p>
+          <h1>CV32E40P tabanlı SoC için mimari, fiziksel tasarım ve performans özeti.</h1>
+          <p>
+            Bu çalışma, işlemci çekirdeği, bellek hiyerarşisi, AI hızlandırıcı adası,
+            çevre birimleri ve LibreLane fiziksel tasarım çıktısını tek bir incelenebilir
+            sunum içinde birleştirir. Amaç, teknik doğrulama sonuçlarını sade fakat
+            akademik bir anlatımla görünür kılmaktır.
+          </p>
+          <div class="hero-actions">
+            <a href="#architecture">Mimari görünüm</a>
+            <a href="#layers">Fiziksel tasarım</a>
+          </div>
+        </div>
+
+        <div class="hero-stage tilt-zone" aria-label="Hareketli 3D SoC modeli">
+          <div class="soc-chip drag-tilt" data-drag-label="3D SoC">
+            <div class="chip-rim"></div>
+            <button class="chip-module core drag-part" type="button" data-info="CV32E40P: RISC-V islemci cekirdegi">
+              CV32E40P
+            </button>
+            <button class="chip-module ai drag-part" type="button" data-info="AI Unit: AI_CSR, AI_MEM, UART loader ve IRQ">
+              AI Unit
+            </button>
+            <button class="chip-module bus drag-part" type="button" data-info="AXI-Lite fabric: bellek ve MMIO yonlendirme">
+              AXI-Lite
+            </button>
+            <button class="chip-module mem drag-part" type="button" data-info="ROM, IMEM, DMEM ve AI_MEM yerel bellekleri">
+              Memory
+            </button>
+            <span class="packet packet-a"></span>
+            <span class="packet packet-b"></span>
+            <span class="packet packet-c"></span>
+          </div>
+          <div class="hint-panel">
+            <span>Etkileşimli inceleme</span>
+            <strong id="hero-hint">Modüller seçilebilir, sürüklenebilir ve sahne farklı açılardan incelenebilir.</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="story-strip reveal" aria-label="Basit proje akisi">
+        <article>
+          <span>01</span>
+          <h3>İşlemci çekirdeği</h3>
+          <p>CV32E40P reset sonrasında ROM tabanlı başlangıç akışını yürütür.</p>
+        </article>
+        <article>
+          <span>02</span>
+          <h3>Boot ve bellek akışı</h3>
+          <p>QSPI XIP penceresi uygulama imajını IMEM alanına taşır.</p>
+        </article>
+        <article>
+          <span>03</span>
+          <h3>AI veri yolu</h3>
+          <p>UART loader veya CPU, 30 KB AI_MEM alanını iş yükü verisiyle doldurur.</p>
+        </article>
+        <article>
+          <span>04</span>
+          <h3>Fiziksel doğrulama</h3>
+          <p>SAIF güç raporu, LibreLane DRC/LVS/Antenna ve serim çıktıları raporlanır.</p>
+        </article>
+      </section>
+
+      <section id="architecture" class="split-section reveal">
+        <div class="section-heading">
+          <p class="eyebrow">Mimari görünüm</p>
+          <h2>Modül düzeyi SoC mimarisi</h2>
+          <p>
+            Görsel model; CPU çekirdeği, yerel bellekler, APB çevre birimleri, QSPI XIP
+            penceresi ve AI hızlandırıcı adası arasındaki bağlantıları anlaşılır bir topoloji
+            olarak sunar. Her blok seçildiğinde sistem içindeki görevi ve bağlantı bağlamı
+            gösterilir.
+          </p>
+        </div>
+
+        <aside class="section-copy architecture-detail-copy">
+          <div class="detail-card" aria-live="polite">
+            <span id="arch-kicker">Secili blok</span>
+            <strong id="arch-title">CV32E40P Core</strong>
+            <p id="arch-body">RISC-V islemci cekirdegi. Instruction ve data taraflari SoC icinde yerel bellek ve AXI-Lite yoluna baglanir.</p>
+          </div>
+        </aside>
+
+        <div class="architecture-stage tilt-zone">
+          <div class="arch-board">
+            <div class="arch-bus">AXI-Lite Fabric</div>
+            <button class="arch-block core-block drag-part is-active" type="button" data-title="CV32E40P Core" data-body="RISC-V islemci cekirdegi. Instruction ve data taraflari SoC icinde yerel bellek ve AXI-Lite yoluna baglanir.">CV32E40P</button>
+            <button class="arch-block bridge-block drag-part" type="button" data-title="OBI to AXI-Lite" data-body="CV32E40P data yolu dogal OBI konusur; bu kopru MMIO ve bellek erisimlerini AXI-Lite akisine cevirir.">OBI -> AXI</button>
+            <button class="arch-block mem-block drag-part" type="button" data-title="ROM / IMEM / DMEM" data-body="ROM 4 KB, IMEM 8 KB, DMEM 8 KB. Boot ve bare-metal akisi icin yerel bellek omurgasi.">ROM IMEM DMEM</button>
+            <button class="arch-block apb-block drag-part" type="button" data-title="APB Island" data-body="GPIO, Timer, I2C ve QSPI_CFG gibi dusuk bant genislikli cevre birimleri AXI-Lite uzerinden APB adasina iner.">APB Island</button>
+            <button class="arch-block qspi-block drag-part" type="button" data-title="QSPI XIP" data-body="0x3000_0000 penceresi. Flash icerigi bellek gibi okunur, boot-copy akisi buradan IMEM'e veri tasir.">QSPI XIP</button>
+            <button class="arch-block ai-block drag-part" type="button" data-title="AI Unit" data-body="AI_CSR, 30 KB AI_MEM, UART loader, TinyConv accelerator ve done IRQ burada birlesir.">AI Unit</button>
+            <span class="wire w1"></span>
+            <span class="wire w2"></span>
+            <span class="wire w3"></span>
+            <span class="wire w4"></span>
+          </div>
+        </div>
+      </section>
+
+      <section id="layers" class="layer-section reveal">
+        <div class="section-heading">
+          <p class="eyebrow">LibreLane / KLayout görünümü</p>
+          <h2>Fiziksel tasarım katmanlarının etkileşimli serim incelemesi.</h2>
+          <p>
+            GDS çıktısı sadeleştirilerek üst yönlendirme katmanları anlaşılır bir 2.5D modele
+            dönüştürüldü. Amaç, ham maske adlarını ezberletmek değil; sinyal yollarının, bloklar
+            arası bağlantıların ve yonga ölçeğindeki dağıtımın serimde nasıl yer tuttuğunu
+            göstermek.
+          </p>
+        </div>
+
+        <div class="layer-layout">
+          <aside class="layer-controls">
+            <div class="mode-row">
+              <button class="mode-button is-active" type="button" data-mode="stack">Yığın</button>
+              <button class="mode-button" type="button" data-mode="explode">Ayrıştır</button>
+              <button class="mode-button" type="button" data-mode="top">Üst görünüm</button>
+            </div>
+            <button class="layer-choice is-active" type="button" data-layer="all"><span class="layer-dot dot-all"></span>Tüm üst yönlendirme</button>
+            <button class="layer-choice" type="button" data-layer="met3"><span class="layer-dot dot-met3"></span>Met3: yerel sinyal omurgası</button>
+            <button class="layer-choice" type="button" data-layer="met4"><span class="layer-dot dot-met4"></span>Met4: bloklar arası dağıtım</button>
+            <button class="layer-choice" type="button" data-layer="met5"><span class="layer-dot dot-met5"></span>Met5: üst dağıtım katmanı</button>
+            <article class="detail-card layer-text" aria-live="polite">
+              <span id="layer-kicker">KLayout 2.5D</span>
+              <strong id="layer-title">Tüm üst yönlendirme katmanları</strong>
+              <p id="layer-body">Met3, met4 ve met5 katmanları birlikte gösterilerek yerel bağlantı yoğunluğu, bloklar arası yönlendirme ve üst seviye dağıtım aynı sahnede okunur.</p>
+            </article>
+          </aside>
+
+          <div class="layer-stage">
+            <div class="klayout-viewer" aria-label="KLayout 2.5D serim katman goruntusu">
+              <canvas id="klayoutCanvas" width="960" height="680" aria-label="KLayout 2.5D serim katman goruntusu"></canvas>
+              <div class="klayout-legend" id="klayoutLegend" aria-hidden="true"></div>
+              <div class="klayout-status" id="klayoutStatus">KLayout 2.5D verisi yükleniyor...</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="metrics" class="metrics-section reveal">
+        <div class="section-heading">
+          <p class="eyebrow">Raporlanmış tasarım metrikleri</p>
+          <h2>Güç, alan ve signoff göstergeleri</h2>
+        </div>
+        <div class="metrics-grid">
+          <article class="metric-card">
+            <span>Vivado SAIF güç raporu</span>
+            <strong>Yüksek güven</strong>
+            <p>Arty A7-100T / xc7a100tcsg324-1 hedefinde, post-route checkpoint üzerinde activity_arty.saif okunarak raporlandı.</p>
+          </article>
+          <article class="metric-card">
+            <span>Toplam yonga gücü</span>
+            <strong>0.123 W</strong>
+            <p>Dinamik 0.025 W, cihaz statik 0.098 W.</p>
+          </article>
+          <article class="metric-card">
+            <span>LibreLane yonga alanı</span>
+            <strong>1.210576 mm2</strong>
+            <p>sky130A / sky130_fd_sc_hd fiziksel tasarım akışı.</p>
+          </article>
+          <article class="metric-card">
+            <span>LVS</span>
+            <strong>44,945 / 44,945</strong>
+            <p>Aygıt sayıları eşleşti; netlist ve serim benzersiz biçimde doğrulandı.</p>
+          </article>
+          <article class="chart-card">
+            <canvas id="powerCanvas" width="520" height="280" aria-label="Güç dağılımı"></canvas>
+          </article>
+          <article class="chart-card">
+            <canvas id="resourceCanvas" width="620" height="360" aria-label="Arty A7-100T FPGA kaynak kullanımı"></canvas>
+          </article>
+        </div>
+      </section>
+
+      <section id="benchmark" class="metrics-section reveal">
+        <div class="section-heading">
+          <p class="eyebrow">İşlemci performans karakterizasyonu</p>
+          <h2>Sabit çevrim penceresinde ölçülen yazılım iş yükleri</h2>
+          <p>
+            Performans testi kümesi, FPU içermeyen RISC-V işlemci üzerinde fixed-point nümerik
+            hesaplama, DSP benzeri MAC yükü, veri bütünlüğü, kontrol akışı ve bellek erişimi
+            davranışlarını karşılaştırır. Her test aynı çevrim bütçesinde çalıştırıldığı için
+            sonuçlar doğrudan yorumlanabilir.
+          </p>
+        </div>
+        <div class="benchmark-panel">
+          <div class="benchmark-summary" aria-label="Performans ölçüm özeti">
+            <span>Saat<strong>50 MHz</strong></span>
+            <span>Pencere<strong>100000 çevrim</strong></span>
+            <span>Süre<strong>2 ms</strong></span>
+            <span>Ölçek<strong>x500</strong></span>
+          </div>
+          <div class="benchmark-visual-grid">
+            <article class="benchmark-chart-card">
+              <p class="eyebrow">İş yükü karşılaştırması</p>
+              <canvas id="benchmarkCanvas" width="980" height="500" aria-label="İşlemci performans grafiği"></canvas>
+            </article>
+            <article class="benchmark-method-card">
+              <h3>Ölçüm yöntemi</h3>
+              <p>
+                Her algoritma üç ayrı 100000 çevrim penceresinde çalıştırıldı. 50 MHz saat
+                kabulünde bu pencere 2 ms eder; ortalama değer 1 saniyelik eşdeğere
+                ölçeklenmiştir.
+              </p>
+              <dl class="method-list">
+                <div>
+                  <dt>Zaman tabanı</dt>
+                  <dd>100000 çevrim = 2 ms</dd>
+                </div>
+                <div>
+                  <dt>Tekrar</dt>
+                  <dd>3 bağımsız ölçüm penceresi</dd>
+                </div>
+                <div>
+                  <dt>Kararlılık</dt>
+                  <dd>Üç tekrar arasında sonuçlar kararlı aralıkta kaldı</dd>
+                </div>
+                <div>
+                  <dt>Yorum</dt>
+                  <dd>Hız değerleri işlemci üzerinde sürdürülebilen iş yükü yoğunluğunu gösterir.</dd>
+                </div>
+              </dl>
+            </article>
+          </div>
+          <div class="benchmark-table-wrap">
+            <table class="benchmark-table">
+              <thead>
+                <tr>
+                  <th>İş yükü sınıfı</th>
+                  <th>Algoritma / ölçüm senaryosu</th>
+                  <th>2 ms pencere</th>
+                  <th>1 s eşdeğeri</th>
+                  <th>Akademik yorum</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="bench-tag numeric">Nümerik</span></td>
+                  <td><span class="bench-name">Newton karekök<span class="bench-code">newton_sqrt</span></span></td>
+                  <td>1394 iterasyon</td>
+                  <td>697000 iterasyon/s</td>
+                  <td>Bölme içeren iteratif karekök hesabında aritmetik yoğunluğu ölçer.</td>
+                </tr>
+                <tr>
+                  <td><span class="bench-tag numeric">Nümerik</span></td>
+                  <td><span class="bench-name">İkili arama ile karekök<span class="bench-code">bisection_sqrt</span></span></td>
+                  <td>1523 iterasyon</td>
+                  <td>761666 iterasyon/s</td>
+                  <td>Karşılaştırma ve dallanma yoğun kök arama davranışını temsil eder.</td>
+                </tr>
+                <tr>
+                  <td><span class="bench-tag numeric">Nümerik</span></td>
+                  <td><span class="bench-name">Newton ters değer hesabı<span class="bench-code">newton_reciprocal</span></span></td>
+                  <td>1924 iterasyon</td>
+                  <td>962000 iterasyon/s</td>
+                  <td>Fixed-point çarpma ağırlıklı reciprocal iterasyonlarının verimini gösterir.</td>
+                </tr>
+                <tr>
+                  <td><span class="bench-tag numeric">Nümerik</span></td>
+                  <td><span class="bench-name">Jacobi 2x2 lineer çözücü<span class="bench-code">jacobi_2x2</span></span></td>
+                  <td>935 iterasyon</td>
+                  <td>467500 iterasyon/s</td>
+                  <td>Küçük ölçekli lineer denklem çözümünde veri bağımlı güncelleme yükünü ölçer.</td>
+                </tr>
+                <tr>
+                  <td><span class="bench-tag dsp">DSP</span></td>
+                  <td><span class="bench-name">CORDIC sinüs/kosinüs<span class="bench-code">cordic_sincos</span></span></td>
+                  <td>396 hesap</td>
+                  <td>198000 hesap/s</td>
+                  <td>FPU olmadan trigonometrik hesap yapılabildiğini gösteren CORDIC yüküdür.</td>
+                </tr>
+                <tr>
+                  <td><span class="bench-tag dsp">DSP</span></td>
+                  <td><span class="bench-name">16 tap FIR filtre<span class="bench-code">fir16_filter</span></span></td>
+                  <td>269 sample</td>
+                  <td>134500 sample/s</td>
+                  <td>16 tap FIR filtre ile çarp-topla yoğun DSP benzeri iş yükünü temsil eder.</td>
+                </tr>
+                <tr>
+                  <td><span class="bench-tag ai">AI-benzeri</span></td>
+                  <td><span class="bench-name">8x8 matris-vektör çarpımı<span class="bench-code">matvec8x8</span></span></td>
+                  <td>77 matvec</td>
+                  <td>38500 matvec/s</td>
+                  <td>8x8 matris-vektör çarpımıyla küçük AI çekirdeklerinin 64 MAC yükünü örnekler.</td>
+                </tr>
+                <tr>
+                  <td><span class="bench-tag data">Veri</span></td>
+                  <td><span class="bench-name">64 byte CRC32 hesabı<span class="bench-code">crc32_64B</span></span></td>
+                  <td>18 blok</td>
+                  <td>9000 blok/s</td>
+                  <td>64 byte bloklarda bit kaydırma, XOR ve veri bütünlüğü maliyetini ölçer.</td>
+                </tr>
+                <tr>
+                  <td><span class="bench-tag control">Kontrol</span></td>
+                  <td><span class="bench-name">32 elemanlı sıralama<span class="bench-code">sort32</span></span></td>
+                  <td>18 sıralama</td>
+                  <td>9166 sıralama/s</td>
+                  <td>Dallanma yoğun kontrol akışı ve küçük bellek taşıma maliyetini görünür kılar.</td>
+                </tr>
+                <tr>
+                  <td><span class="bench-tag memory">Bellek</span></td>
+                  <td><span class="bench-name">64 adımlı bağımlı bellek zinciri<span class="bench-code">pointer_chase64</span></span></td>
+                  <td>149 zincir</td>
+                  <td>74500 zincir/s</td>
+                  <td>Bağımlı bellek erişimlerinde ardışık yükleme gecikmesini karakterize eder.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="benchmark-note">
+            Bu bölümdeki değerler, aynı 2 ms ölçüm penceresinden türetilmiş olduğundan algoritmalar
+            eşit zaman bütçesi altında karşılaştırılır. Tablo mutlak hızdan çok işlemcinin farklı
+            iş yükü sınıflarına verdiği göreli tepkiyi anlatmak için kullanılmalıdır.
+          </p>
+        </div>
+      </section>
+
+      <section id="evidence" class="evidence-section reveal">
+        <div class="section-copy">
+          <p class="eyebrow">Doğrulama durumu</p>
+          <h2>Tamamlanan kanıtlar ve açık teknik fazlar</h2>
+          <p>
+            Simülasyon testleri başarıyla tamamlandı; Vivado güç raporu SAIF ile yüksek güven
+            seviyesinde alındı ve LibreLane fiziksel tasarım akışında DRC/LVS/Antenna kontrolleri
+            raporlandı.
+          </p>
+        </div>
+        <div class="proof-wall">
+          <article><span>DRC</span><strong>Geçti</strong><small>Tasarım kuralı kontrolü temiz.</small></article>
+          <article><span>LVS</span><strong>Geçti</strong><small>Netlist ve layout eşleşmesi doğrulandı.</small></article>
+          <article><span>Antenna</span><strong>Geçti</strong><small>Antenna ihlali raporlanmadı.</small></article>
+          <article><span>AI adası</span><strong>Entegre</strong><small>AI bellek, UART loader ve IRQ akışı bağlandı.</small></article>
+          <article><span>Kart testi</span><strong>Sıradaki faz</strong><small>FPGA üzerinde canlı çalışma doğrulaması.</small></article>
+          <article><span>Doğruluk testi</span><strong>Sıradaki faz</strong><small>AI çıktılarını referans sonuçlarla karşılaştırma.</small></article>
+        </div>
+      </section>
+    </main>
+    <script src="assets/app.js" defer></script>
+  </body>
+</html>

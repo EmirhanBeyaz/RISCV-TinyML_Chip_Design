@@ -1,0 +1,2 @@
+   text	   data	    bss	    dec	    hex	filename
+   4004	     68	   1292	   5364	   14f4	soc/sw/benchmark.elf

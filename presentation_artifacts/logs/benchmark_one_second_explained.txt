@@ -1,0 +1,33 @@
+Benchmark clock: 50 MHz
+Measured window: 100000 cycles = 2 ms
+Scale to 1 second: x500
+
+newton_sqrt: 697000 iter/s
+Meaning: division-heavy iterative square-root workload.
+
+bisection_sqrt: 761666 iter/s
+Meaning: branch/comparison-heavy root search workload.
+
+newton_reciprocal: 962000 iter/s
+Meaning: fixed-point multiply feedback workload for reciprocal approximation.
+
+jacobi_2x2: 467500 iter/s
+Meaning: small iterative linear-solver workload.
+
+cordic_sincos: 198000 sincos/s
+Meaning: trigonometric calculation without FPU, using shift/add CORDIC steps.
+
+fir16_filter: 134500 sample/s
+Meaning: 16-tap DSP filtering workload, useful for signal-processing demos.
+
+matvec8x8: 38500 matvec/s
+Meaning: AI-like 8x8 matrix-vector workload; each iteration performs 64 MAC-style operations.
+
+crc32_64B: 9000 block/s
+Meaning: bitwise CRC over 64-byte blocks; about 576000 byte/s of bit-level data-integrity work.
+
+sort32: 9166 sort/s
+Meaning: 32-element insertion sort; branch and small-memory movement workload.
+
+pointer_chase64: 74500 chain/s
+Meaning: dependent memory-load workload; each chain performs 64 pointer-following steps.

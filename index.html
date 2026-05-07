@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>RISC-V SoC Sunum Sitesi</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #081018;
+        --panel: #101b27;
+        --panel-2: #142233;
+        --text: #f5f7fb;
+        --muted: #9fb0c4;
+        --line: rgba(148, 163, 184, 0.22);
+        --accent: #35d6d0;
+        --accent-2: #90e36f;
+        --shadow: 0 28px 80px rgba(0, 0, 0, 0.38);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        background:
+          radial-gradient(circle at 20% 0%, rgba(53, 214, 208, 0.16), transparent 32rem),
+          radial-gradient(circle at 82% 12%, rgba(144, 227, 111, 0.12), transparent 28rem),
+          linear-gradient(135deg, #071018 0%, #0b1420 46%, #0a111a 100%);
+        color: var(--text);
+      }
+
+      .page-shell {
+        width: min(1480px, calc(100% - 48px));
+        margin: 0 auto;
+        padding: 34px 0 42px;
+      }
+
+      .topline {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        margin-bottom: 22px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        min-width: 0;
+      }
+
+      .brand-mark {
+        width: 42px;
+        height: 42px;
+        border: 1px solid rgba(53, 214, 208, 0.55);
+        background:
+          linear-gradient(135deg, rgba(53, 214, 208, 0.22), rgba(144, 227, 111, 0.08)),
+          #0c1723;
+        box-shadow: 0 0 24px rgba(53, 214, 208, 0.2);
+        border-radius: 8px;
+        position: relative;
+        flex: 0 0 auto;
+      }
+
+      .brand-mark::before,
+      .brand-mark::after {
+        content: "";
+        position: absolute;
+        inset: 10px;
+        border: 1px solid rgba(245, 247, 251, 0.42);
+      }
+
+      .brand-mark::after {
+        inset: 15px;
+        border-color: rgba(144, 227, 111, 0.55);
+      }
+
+      .brand h1 {
+        margin: 0;
+        font-size: clamp(1.35rem, 2.2vw, 2.2rem);
+        line-height: 1.05;
+        letter-spacing: 0;
+      }
+
+      .brand p {
+        margin: 7px 0 0;
+        color: var(--muted);
+        font-size: 0.98rem;
+      }
+
+      .actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+
+      .actions a {
+        display: inline-flex;
+        align-items: center;
+        min-height: 40px;
+        padding: 0 14px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        color: var(--text);
+        text-decoration: none;
+        background: rgba(16, 27, 39, 0.74);
+      }
+
+      .actions a.primary {
+        border-color: rgba(53, 214, 208, 0.52);
+        color: #061018;
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        font-weight: 760;
+      }
+
+      .viewer-frame {
+        border: 1px solid rgba(148, 163, 184, 0.28);
+        border-radius: 12px;
+        background: linear-gradient(180deg, rgba(20, 34, 51, 0.92), rgba(10, 17, 26, 0.94));
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+
+      .window-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        min-height: 48px;
+        padding: 0 16px;
+        border-bottom: 1px solid var(--line);
+        background: rgba(8, 16, 24, 0.8);
+      }
+
+      .window-controls {
+        display: flex;
+        gap: 8px;
+      }
+
+      .window-controls span {
+        width: 11px;
+        height: 11px;
+        border-radius: 999px;
+        background: #ef6666;
+      }
+
+      .window-controls span:nth-child(2) {
+        background: #f2c85c;
+      }
+
+      .window-controls span:nth-child(3) {
+        background: #6bd26b;
+      }
+
+      .window-title {
+        color: var(--muted);
+        font-size: 0.95rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .viewer-frame iframe {
+        display: block;
+        width: 100%;
+        height: min(82vh, 920px);
+        min-height: 680px;
+        border: 0;
+        background: #081018;
+      }
+
+      .note {
+        margin: 18px 0 0;
+        color: var(--muted);
+        line-height: 1.55;
+        font-size: 0.96rem;
+      }
+
+      @media (max-width: 820px) {
+        .page-shell {
+          width: min(100% - 24px, 1480px);
+          padding-top: 20px;
+        }
+
+        .topline {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .actions {
+          justify-content: flex-start;
+        }
+
+        .viewer-frame iframe {
+          min-height: 620px;
+          height: 82vh;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page-shell">
+      <header class="topline">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <div>
+            <h1>RISC-V SoC Sunum Sitesi</h1>
+            <p>Mimari, fiziksel tasarım, güç ve işlemci performansı tek panelde.</p>
+          </div>
+        </div>
+        <nav class="actions" aria-label="Sunum bağlantıları">
+          <a href="site/sunum.html">Tam sayfa aç</a>
+          <a class="primary" href="site/sunum.html#layers">Serim görünümüne git</a>
+        </nav>
+      </header>
+
+      <section class="viewer-frame" aria-label="Gömülü sunum penceresi">
+        <div class="window-bar">
+          <div class="window-controls" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <div class="window-title">site/sunum.html</div>
+        </div>
+        <iframe src="site/sunum.html" title="RISC-V SoC etkileşimli sunum paneli"></iframe>
+      </section>
+
+      <p class="note">
+        Bu sayfa GitHub Pages kök yayınında doğrudan açılır. Gömülü panel JSON tabanlı
+        KLayout verilerini aynı alan adından yüklediği için GitHub Pages üzerinde ek kurulum
+        gerektirmez.
+      </p>
+    </main>
+  </body>
+</html>
