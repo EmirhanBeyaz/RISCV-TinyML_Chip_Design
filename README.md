@@ -4,6 +4,16 @@ RISC-V tabanli SoC, AI hizlandirici entegrasyonu, FPGA dogrulama akisi ve fiziks
 
 Bu repo; RTL kaynaklarini, testbenchleri, benchmark yazilimini, Vivado dogrulama akisini ve GitHub Pages uzerinden yayinlanabilir interaktif sunum sitesini icerir. Amac, tasarimin mimari niyetini ve elde edilen dogrulama sonuclarini profesyonel ve incelenebilir bir paket olarak sunmaktir.
 
+## Live Presentation
+
+[![RISC-V SoC sunum sitesi önizlemesi](./site/preview.svg)](https://emirhanbeyaz.github.io/2026_chip_design/)
+
+Interaktif sunum GitHub Pages uzerinden yayinlanmak icin hazirdir:
+
+```text
+https://emirhanbeyaz.github.io/2026_chip_design/
+```
+
 ## Project Scope
 
 - `CV32E40P` tabanli RISC-V SoC entegrasyonu
@@ -16,7 +26,7 @@ Bu repo; RTL kaynaklarini, testbenchleri, benchmark yazilimini, Vivado dogrulama
 
 Board uzerinde final urun bitstream'i, pin seviyesi bring-up ve final timing/power sign-off ayri faz olarak ele alinmalidir.
 
-## Published Presentation
+## Local Presentation
 
 GitHub Pages yayini icin kok dizindeki `index.html` kullanilir. Sayfa, asagidaki interaktif paneli gomulu bir pencere olarak acar:
 
