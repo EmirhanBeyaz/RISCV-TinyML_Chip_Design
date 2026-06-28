@@ -6,12 +6,12 @@ Bu repo; RTL kaynaklarini, testbenchleri, benchmark yazilimini, Vivado dogrulama
 
 ## Live Presentation
 
-[![RISC-V SoC sunum sitesi önizlemesi](./site/preview.svg)](https://emirhanbeyaz.github.io/2026_chip_design/)
+[![RISC-V SoC sunum sitesi önizlemesi](./site/preview.svg)](https://emirhanbeyaz.github.io/RISCV-TinyML_Chip_Design/)
 
 Interaktif sunum GitHub Pages uzerinden yayinlanmak icin hazirdir:
 
 ```text
-https://emirhanbeyaz.github.io/2026_chip_design/
+https://emirhanbeyaz.github.io/RISCV-TinyML_Chip_Design/
 ```
 
 ## Project Scope
