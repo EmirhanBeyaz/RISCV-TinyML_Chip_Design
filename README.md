@@ -1,4 +1,4 @@
-# 2026 Chip Design
+# RISCV-TinyML_Chip_Design
 
 RISC-V tabanli SoC, AI hizlandirici entegrasyonu, FPGA dogrulama akisi ve fiziksel tasarim sunum artefaktlarini bir araya getiren teknik calisma deposu.
 
